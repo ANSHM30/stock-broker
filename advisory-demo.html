@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111310">
+  <title>Advisory Desk · Alvest Paper</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111310;
+      --panel: #181a16;
+      --panel-2: #1d201b;
+      --panel-3: #22251f;
+      --line: #30332c;
+      --line-soft: #272a24;
+      --text: #f0efe8;
+      --muted: #9a9d91;
+      --dim: #6f7369;
+      --gold: #e6b957;
+      --gold-soft: #3a3020;
+      --green: #83c898;
+      --green-soft: #1c3023;
+      --red: #df8375;
+      --red-soft: #37231f;
+      --blue: #9bb9d3;
+      --radius: 10px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 87% -10%, rgba(114, 94, 43, .14), transparent 34rem),
+        var(--bg);
+      font: 14px/1.45 var(--sans);
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 220px minmax(0, 1fr); }
+    .rail {
+      position: sticky; top: 0; height: 100vh; align-self: start;
+      display: flex; flex-direction: column; padding: 22px 14px 16px;
+      background: rgba(18, 19, 16, .95); border-right: 1px solid var(--line-soft);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 11px 26px; }
+    .brand-mark {
+      width: 31px; height: 31px; border: 1px solid #6c582b; border-radius: 9px;
+      display: grid; place-items: center; color: var(--gold);
+      background: linear-gradient(145deg, #302919, #1d1b15);
+      font-family: Georgia, serif; font-size: 19px; font-style: italic;
+    }
+    .brand-name { font: 600 17px/1 Georgia, "Times New Roman", serif; letter-spacing: -.3px; }
+    .brand-sub { color: var(--dim); font-size: 9px; letter-spacing: 1.65px; text-transform: uppercase; margin-top: 5px; }
+    .rail-label { padding: 5px 12px 9px; color: var(--dim); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .nav-group { display: grid; gap: 4px; }
+    .nav-link {
+      width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+      color: #a9aca1; background: transparent; border: 1px solid transparent;
+      border-radius: 7px; cursor: pointer; text-align: left; transition: .18s ease;
+    }
+    .nav-link:hover { color: var(--text); background: #1b1d19; }
+    .nav-link[aria-current="page"] { color: #f2d48e; background: #29251b; border-color: #3a3222; }
+    .nav-icon { width: 17px; color: currentColor; text-align: center; font-size: 15px; }
+    .nav-count { margin-left: auto; font: 11px var(--mono); color: var(--dim); }
+    .rail-spacer { flex: 1; }
+    .account-card { padding: 13px 12px; border: 1px solid var(--line); background: #171915; border-radius: 8px; }
+    .account-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .account-title { color: var(--muted); font-size: 11px; }
+    .demo-pill { color: var(--gold); border: 1px solid #5a4928; background: #282216; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: .7px; }
+    .account-value { margin-top: 8px; font: 600 17px var(--mono); letter-spacing: -.7px; }
+    .account-caption { color: var(--dim); font-size: 10px; margin-top: 3px; }
+    .rail-foot { color: #62665d; padding: 14px 10px 0; font-size: 10px; }
+
+    .workspace { min-width: 0; }
+    .topbar {
+      min-height: 62px; display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 0 34px; border-bottom: 1px solid var(--line-soft);
+      background: rgba(17, 19, 16, .78);
+    }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .crumb strong { color: #e9e7dd; font-weight: 550; }
+    .top-actions { display: flex; align-items: center; gap: 16px; }
+    .market-state { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px rgba(230,185,87,.09); }
+    .avatar { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid #42443c; border-radius: 50%; color: #d3c8a9; background: #26251f; font-size: 10px; font-weight: 700; }
+    main { max-width: 1480px; margin: 0 auto; padding: 30px 34px 60px; }
+    .page-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 23px; }
+    .eyebrow { color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+    h1 { margin: 5px 0 5px; font: 500 clamp(26px, 3vw, 34px)/1.15 Georgia, "Times New Roman", serif; letter-spacing: -.65px; }
+    .subhead { max-width: 720px; margin: 0; color: var(--muted); font-size: 12px; }
+    .sample-stamp { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; white-space: nowrap; border: 1px solid #514326; background: rgba(61, 48, 23, .42); color: #e9c873; border-radius: 5px; font-size: 10px; font-weight: 650; letter-spacing: .4px; }
+    .sample-stamp span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(110deg, #1a1c17, #171915); }
+    .metric { min-height: 91px; padding: 16px 19px; border-right: 1px solid var(--line-soft); }
+    .metric:last-child { border-right: 0; }
+    .metric-label { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 10px; letter-spacing: .25px; }
+    .metric-icon { color: var(--dim); font-size: 12px; }
+    .metric-value { margin-top: 8px; color: #f3f1e8; font: 600 21px/1 var(--mono); letter-spacing: -.8px; }
+    .metric-note { margin-top: 6px; color: var(--dim); font-size: 10px; }
+    .metric-note .up { color: var(--green); }
+
+    .featured {
+      position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(190px, 1fr) 1.35fr auto;
+      align-items: center; gap: 24px; padding: 17px 20px; margin-bottom: 25px;
+      border: 1px solid #5a4826; border-radius: var(--radius);
+      background: linear-gradient(105deg, rgba(52, 43, 26, .9), rgba(31, 29, 22, .94) 56%, #1a1c17);
+    }
+    .featured:after { position: absolute; content: ""; width: 140px; height: 140px; top: -98px; right: 90px; border: 1px solid rgba(230,185,87,.16); border-radius: 50%; box-shadow: 0 0 0 16px rgba(230,185,87,.025), 0 0 0 33px rgba(230,185,87,.018); pointer-events: none; }
+    .featured-kicker { color: #d5b965; text-transform: uppercase; letter-spacing: 1.2px; font-size: 9px; font-weight: 700; }
+    .featured-title { margin-top: 5px; font: 500 18px Georgia, serif; }
+    .featured-title b { color: #fff4d0; font-weight: 500; }
+    .featured-copy { max-width: 500px; color: #aaa99d; font-size: 11px; }
+    .featured-copy strong { color: #e6d9b7; font-weight: 550; }
+    .featured-button, .buy-button, .primary-button {
+      border: 1px solid #8a6c2d; background: #c99e45; color: #18160f;
+      border-radius: 5px; padding: 9px 13px; font-size: 11px; font-weight: 750; cursor: pointer;
+      transition: background .16s ease, transform .16s ease;
+    }
+    .featured-button:hover, .buy-button:hover, .primary-button:hover { background: #e1b959; transform: translateY(-1px); }
+    .featured-button { position: relative; z-index: 1; white-space: nowrap; }
+
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin-bottom: 12px; }
+    h2 { margin: 0; font: 500 19px Georgia, "Times New Roman", serif; letter-spacing: -.2px; }
+    .section-caption { color: var(--dim); margin-top: 3px; font-size: 10px; }
+    .filters { display: flex; align-items: center; gap: 8px; }
+    .search-wrap { position: relative; }
+    .search-symbol { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 14px; pointer-events: none; }
+    .search {
+      width: 210px; height: 34px; padding: 0 11px 0 31px; color: var(--text);
+      border: 1px solid var(--line); border-radius: 5px; background: #171915; font-size: 11px;
+    }
+    .search::placeholder { color: #74776d; }
+    .filter-select { height: 34px; padding: 0 28px 0 10px; color: #c9c9bf; border: 1px solid var(--line); border-radius: 5px; background: #171915; font-size: 11px; }
+    .signal-list { display: grid; gap: 9px; }
+    .signal {
+      display: grid; grid-template-columns: minmax(155px, 1.35fr) minmax(250px, 1.7fr) minmax(125px, .75fr) minmax(115px, .7fr) auto;
+      align-items: center; gap: 18px; padding: 15px 17px;
+      border: 1px solid var(--line); border-radius: 8px; background: #191b17;
+      transition: border-color .17s ease, background .17s ease;
+    }
+    .signal:hover { border-color: #45483c; background: #1c1e19; }
+    .signal-main { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .ticker-mark { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 8px; border: 1px solid #383b33; background: #22241f; color: #d9c68e; font: 700 10px var(--mono); }
+    .ticker { color: #f3f0e6; font: 650 14px var(--mono); letter-spacing: -.4px; }
+    .company { margin-top: 3px; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+    .exchange { margin-top: 3px; color: var(--dim); font: 9px var(--mono); }
+    .quote-block { display: grid; grid-template-columns: repeat(3, minmax(65px, 1fr)); gap: 10px; }
+    .field-label { color: var(--dim); font-size: 9px; letter-spacing: .45px; text-transform: uppercase; }
+    .field-value { margin-top: 4px; color: #e7e5dc; font: 600 12px var(--mono); white-space: nowrap; }
+    .field-value.positive { color: var(--green); }
+    .quote-current { padding-left: 12px; border-left: 1px solid var(--line); }
+    .quality { display: grid; gap: 7px; }
+    .quality-line { display: flex; align-items: center; justify-content: space-between; gap: 7px; color: var(--muted); font-size: 10px; }
+    .quality-line strong { color: #deddd3; font: 600 10px var(--mono); }
+    .meter { height: 3px; overflow: hidden; border-radius: 3px; background: #33362f; }
+    .meter span { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
+    .status-col { min-width: 94px; }
+    .buy-zone { color: #e3c36d; font: 600 11px var(--mono); white-space: nowrap; }
+    .stop-line { margin-top: 3px; color: #9c9f94; font: 9px var(--mono); white-space: nowrap; }
+    .potential { color: var(--green); font: 9px var(--mono); }
+    .tag-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .tag { padding: 3px 6px; border-radius: 4px; background: #262821; color: #b7b8ad; font-size: 9px; white-space: nowrap; }
+    .tag.buy { color: #99d3a9; background: #1d3023; }
+    .tag.watch { color: #d8c178; background: #342d1d; }
+    .horizon { color: var(--dim); font-size: 9px; }
+    .buy-button { min-width: 62px; padding: 8px 11px; }
+    .thesis { grid-column: 1 / -1; margin: -2px 0 0; padding-top: 9px; border-top: 1px solid var(--line-soft); color: #9b9e93; font-size: 10px; }
+    .thesis b { color: #c9c7bc; font-weight: 550; }
+    .thesis .disclaimer-inline { color: #767a70; margin-left: 7px; }
+    .empty-state { display: none; padding: 36px 20px; border: 1px dashed #3a3d34; border-radius: 8px; color: var(--muted); text-align: center; }
+    [hidden] { display: none !important; }
+    .empty-state strong { display: block; color: var(--text); margin-bottom: 5px; }
+    .disclosure { display: flex; gap: 10px; margin-top: 16px; padding: 12px 14px; border-left: 2px solid #64532c; background: rgba(31, 29, 23, .65); color: #9d9c91; font-size: 10px; }
+    .disclosure b { flex: 0 0 auto; color: #d4bd7a; font-weight: 650; }
+
+    .other-view { display: none; }
+    .other-view.active { display: block; }
+    .simple-panel { margin-top: 22px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #191b17; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 19px; border-bottom: 1px solid var(--line-soft); }
+    .panel-heading h2 { font-size: 18px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 11px 17px; color: var(--dim); background: #171915; font-size: 9px; font-weight: 650; letter-spacing: .7px; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 13px 17px; border-top: 1px solid var(--line-soft); color: #d4d3c9; font-size: 11px; white-space: nowrap; }
+    td.mono { font-family: var(--mono); }
+    .table-empty { padding: 42px 18px; color: var(--muted); text-align: center; }
+    .view-intro { color: var(--muted); font-size: 12px; }
+    .toast { position: fixed; right: 22px; bottom: 20px; z-index: 12; max-width: min(390px, calc(100vw - 32px)); padding: 12px 15px; border: 1px solid #41604a; border-radius: 7px; background: #1b2b20; color: #d1ead6; box-shadow: 0 12px 36px #0008; font-size: 12px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 20; display: none; place-items: center; padding: 18px; background: rgba(5, 6, 5, .76); }
+    .modal-backdrop.open { display: grid; }
+    .modal { width: min(100%, 450px); overflow: hidden; border: 1px solid #45473d; border-radius: 10px; background: #1a1c18; box-shadow: 0 25px 80px #000b; animation: modal-in .18s ease both; }
+    @keyframes modal-in { from { opacity: 0; transform: translateY(7px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; padding: 19px 21px 16px; border-bottom: 1px solid var(--line-soft); }
+    .modal-kicker { color: var(--gold); font-size: 9px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; }
+    .modal h2 { margin-top: 4px; font-size: 21px; }
+    .close-button { width: 29px; height: 29px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: #20221d; cursor: pointer; font-size: 17px; }
+    .close-button:hover { color: var(--text); border-color: #55584d; }
+    .modal-body { padding: 18px 21px 20px; }
+    .order-summary { display: flex; justify-content: space-between; gap: 12px; padding: 11px 12px; margin-bottom: 17px; border: 1px solid var(--line-soft); border-radius: 6px; background: #161814; }
+    .order-summary strong { color: #ece9dd; font: 600 12px var(--mono); }
+    .order-summary span { color: var(--muted); font-size: 10px; }
+    .order-summary .price { color: var(--gold); font: 600 12px var(--mono); }
+    .form-label { display: block; margin-bottom: 6px; color: #c4c5ba; font-size: 11px; }
+    .qty-input { width: 100%; height: 39px; padding: 0 11px; border: 1px solid #44473d; border-radius: 5px; background: #121410; color: var(--text); font: 13px var(--mono); }
+    .input-hint { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; color: var(--dim); font-size: 9px; }
+    .estimate { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 17px 0; }
+    .estimate-box { padding: 11px 12px; border: 1px solid var(--line-soft); border-radius: 6px; background: #161814; }
+    .estimate-box .field-label { font-size: 9px; }
+    .estimate-value { margin-top: 6px; color: #e8e5da; font: 600 14px var(--mono); }
+    .estimate-value.risk { color: #e0a08d; }
+    .demo-warning { padding: 10px 11px; border: 1px solid #4a3e26; border-radius: 5px; color: #c2b588; background: #292418; font-size: 10px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 17px; }
+    .secondary-button { padding: 8px 12px; border: 1px solid #41443a; border-radius: 5px; color: #d1d0c6; background: #20221d; font-size: 11px; cursor: pointer; }
+    .secondary-button:hover { background: #292b25; }
+    .primary-button { min-width: 150px; }
+    .primary-button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
+
+    @media (max-width: 1050px) {
+      .shell { grid-template-columns: 190px minmax(0, 1fr); }
+      .topbar { padding: 0 24px; }
+      main { padding: 25px 24px 48px; }
+      .signal { grid-template-columns: minmax(135px, 1fr) minmax(220px, 1.4fr) minmax(110px, .75fr) auto; gap: 13px; }
+      .quality { display: none; }
+      .quote-block { grid-template-columns: repeat(3, minmax(55px, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .signal { grid-template-columns: minmax(0, 1fr) auto; gap: 12px 9px; }
+      .signal-main { grid-column: 1; }
+      .signal .quote-block { grid-column: 1 / -1; grid-row: 2; padding: 10px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+      .status-col { grid-column: 1; grid-row: 3; }
+      .signal .buy-button { grid-column: 2; grid-row: 1; }
+      .thesis { grid-column: 1 / -1; grid-row: 4; border-top: 0; padding-top: 0; }
+    }
+    @media (max-width: 760px) {
+      .shell { display: block; padding-bottom: 58px; }
+      .rail { position: fixed; z-index: 9; top: auto; bottom: 0; left: 0; right: 0; width: auto; height: 58px; flex-direction: row; align-items: center; padding: 5px 8px; border-right: 0; border-top: 1px solid var(--line); background: #151713; }
+      .brand, .rail-label, .rail-spacer, .account-card, .rail-foot { display: none; }
+      .nav-group { width: 100%; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; }
+      .nav-link { min-width: 0; min-height: 45px; flex-direction: column; justify-content: center; gap: 2px; padding: 3px 1px; border-radius: 5px; font-size: 9px; }
+      .nav-icon { font-size: 15px; }
+      .nav-count { display: none; }
+      .topbar { min-height: 53px; padding: 0 16px; }
+      main { padding: 23px 16px 34px; }
+      .page-head { align-items: flex-start; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+      h1 { font-size: 29px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .metric { min-height: 80px; padding: 13px 14px; border-bottom: 1px solid var(--line-soft); }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(3), .metric:nth-child(4) { border-bottom: 0; }
+      .metric-value { font-size: 18px; }
+      .featured { grid-template-columns: 1fr auto; gap: 9px 12px; padding: 14px; }
+      .featured-copy { grid-column: 1 / -1; grid-row: 2; }
+      .featured-button { grid-column: 2; grid-row: 1; padding: 8px 9px; font-size: 10px; }
+      .featured-title { font-size: 16px; }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+      .filters { width: 100%; }
+      .search-wrap { flex: 1; }
+      .search { width: 100%; }
+      .signal { grid-template-columns: 1fr auto; gap: 12px 9px; padding: 13px; }
+      .signal-main { grid-column: 1; }
+      .signal .quote-block { grid-column: 1 / -1; grid-row: 2; padding: 10px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+      .quote-current { padding-left: 8px; }
+      .status-col { grid-column: 1; grid-row: 3; }
+      .signal .buy-button { grid-column: 2; grid-row: 1; }
+      .thesis { grid-column: 1 / -1; grid-row: 4; border-top: 0; padding-top: 0; }
+      .thesis .disclaimer-inline { display: block; margin: 4px 0 0; }
+      .disclosure { align-items: flex-start; }
+      .market-state { font-size: 10px; }
+    }
+    @media (max-width: 390px) {
+      .filters { gap: 6px; }
+      .filter-select { max-width: 116px; }
+      .market-state .market-copy { display: none; }
+      .quote-block { gap: 5px; }
+      .field-label { font-size: 8px; }
+      .field-value { font-size: 11px; }
+      .ticker-mark { width: 32px; height: 32px; flex-basis: 32px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">A</div>
+        <div><div class="brand-name">alvest</div><div class="brand-sub">Invest with intent</div></div>
+      </div>
+      <div class="rail-label">Workspace</div>
+      <nav class="nav-group">
+        <button class="nav-link" data-view="overview"><span class="nav-icon" aria-hidden="true">⌂</span>Overview</button>
+        <button class="nav-link" data-view="watchlist"><span class="nav-icon" aria-hidden="true">◉</span>Watchlist</button>
+        <button class="nav-link" data-view="advisory" aria-current="page"><span class="nav-icon" aria-hidden="true">✳</span>Advisory <span class="nav-count">04</span></button>
+        <button class="nav-link" data-view="orders"><span class="nav-icon" aria-hidden="true">▤</span>Orders <span class="nav-count" id="nav-order-count">00</span></button>
+        <button class="nav-link" data-view="positions"><span class="nav-icon" aria-hidden="true">⌁</span>Positions</button>
+        <button class="nav-link" data-view="holdings"><span class="nav-icon" aria-hidden="true">▦</span>Holdings</button>
+      </nav>
+      <div class="rail-spacer"></div>
+      <div class="account-card">
+        <div class="account-row"><div class="account-title">Paper buying power</div><span class="demo-pill">DEMO</span></div>
+        <div class="account-value" id="rail-cash">₹5,00,000</div>
+        <div class="account-caption">Simulated funds · no real trades</div>
+      </div>
+      <div class="rail-foot">Sample workspace · v1.0</div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="crumb">Workspace <span aria-hidden="true">/</span> <strong id="breadcrumb">Advisory</strong></div>
+        <div class="top-actions">
+          <div class="market-state"><span class="pulse" aria-hidden="true"></span><span class="market-copy">Illustrative market data</span><span>·</span><span>INR</span></div>
+          <div class="avatar" aria-label="Demo account">AD</div>
+        </div>
+      </header>
+
+      <main>
+        <section class="view-content" id="advisory-view">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Research-led · paper only</div>
+              <h1>Advisory desk</h1>
+              <p class="subhead">A considered view of sample Indian equity signals. Explore the thesis, weigh the levels, then test an idea with a paper order.</p>
+            </div>
+            <div class="sample-stamp"><span></span> SAMPLE DATA · NOT LIVE</div>
+          </div>
+
+          <section class="metrics" aria-label="Paper account summary">
+            <div class="metric"><div class="metric-label">Active recommendations <span class="metric-icon">✳</span></div><div class="metric-value">04</div><div class="metric-note">Illustrative signals only</div></div>
+            <div class="metric"><div class="metric-label">Paper orders <span class="metric-icon">↗</span></div><div class="metric-value" id="metric-orders">00</div><div class="metric-note" id="order-note">No simulated orders yet</div></div>
+            <div class="metric"><div class="metric-label">Buying power <span class="metric-icon">₹</span></div><div class="metric-value" id="metric-cash">₹5.00L</div><div class="metric-note">Virtual balance · INR</div></div>
+            <div class="metric"><div class="metric-label">Market reference <span class="metric-icon">◷</span></div><div class="metric-value" style="font-size:17px">SAMPLE</div><div class="metric-note">Not connected to an exchange</div></div>
+          </section>
+
+          <section class="featured" aria-label="Featured signal">
+            <div><div class="featured-kicker">Signal in focus · Sample</div><div class="featured-title"><b>HDFCBANK</b> · measured breakout</div></div>
+            <div class="featured-copy">Price is holding above a prior resistance band on this illustrative chart. <strong>Consider the entry range; define risk first.</strong></div>
+            <button class="featured-button" data-buy="HDFCBANK">Explore paper buy <span aria-hidden="true">→</span></button>
+          </section>
+
+          <section aria-labelledby="signals-heading">
+            <div class="section-heading">
+              <div><h2 id="signals-heading">Current recommendations</h2><div class="section-caption">4 sample ideas · prices and analysis are illustrative, not live</div></div>
+              <div class="filters">
+                <label class="search-wrap"><span class="search-symbol" aria-hidden="true">⌕</span><input id="signal-search" class="search" type="search" placeholder="Search symbol or company" aria-label="Search recommendations"></label>
+                <select id="signal-filter" class="filter-select" aria-label="Filter by signal">
+                  <option value="all">All signals</option>
+                  <option value="buy">Buy setups</option>
+                  <option value="watch">On watch</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="signal-list" id="signal-list">
+              <article class="signal" data-symbol="HDFCBANK" data-category="buy" data-price="1684" data-stop="1642" data-target="1768">
+                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">H</div><div><div class="ticker">HDFCBANK</div><div class="company">HDFC Bank Ltd.</div><div class="exchange">NSE · BANKING</div></div></div>
+                <div class="quote-block">
+                  <div><div class="field-label">Buy zone</div><div class="field-value">₹1,670–1,690</div></div>
+                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹1,684.00</div></div>
+                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.82%</div></div>
+                </div>
+                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>82%</strong></div><div class="meter"><span style="width:82%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 2.0</strong></div></div>
+                <div class="status-col"><div class="buy-zone">₹1,768 target <span class="potential">+5.0%</span></div><div class="stop-line">Stop ₹1,642</div><div class="tag-row"><span class="tag buy">BUY SETUP</span><span class="horizon">2–4 wk</span></div></div>
+                <button class="buy-button" data-buy="HDFCBANK" aria-label="Create paper order for HDFC Bank">Paper buy</button>
+                <p class="thesis"><b>Thesis:</b> Holding above a prior resistance band; steady momentum supports a measured continuation setup. Stop ₹1,642. <span class="disclaimer-inline">Illustrative analysis · 2h ago</span></p>
+              </article>
+
+              <article class="signal" data-symbol="INFY" data-category="buy" data-price="1478" data-stop="1438" data-target="1555">
+                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">I</div><div><div class="ticker">INFY</div><div class="company">Infosys Ltd.</div><div class="exchange">NSE · IT SERVICES</div></div></div>
+                <div class="quote-block">
+                  <div><div class="field-label">Buy zone</div><div class="field-value">₹1,465–1,485</div></div>
+                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹1,478.00</div></div>
+                  <div><div class="field-label">Day move</div><div class="field-value positive">+1.14%</div></div>
+                </div>
+                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>76%</strong></div><div class="meter"><span style="width:76%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 1.9</strong></div></div>
+                <div class="status-col"><div class="buy-zone">₹1,555 target <span class="potential">+5.2%</span></div><div class="stop-line">Stop ₹1,438</div><div class="tag-row"><span class="tag buy">BUY SETUP</span><span class="horizon">1–3 wk</span></div></div>
+                <button class="buy-button" data-buy="INFY" aria-label="Create paper order for Infosys">Paper buy</button>
+                <p class="thesis"><b>Thesis:</b> Sample momentum pickup after a consolidation range; entry is near the illustrative support zone. Stop ₹1,438. <span class="disclaimer-inline">Illustrative analysis · 4h ago</span></p>
+              </article>
+
+              <article class="signal" data-symbol="TATAMOTORS" data-category="watch" data-price="968" data-stop="932" data-target="1036">
+                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">T</div><div><div class="ticker">TATAMOTORS</div><div class="company">Tata Motors Ltd.</div><div class="exchange">NSE · AUTOMOTIVE</div></div></div>
+                <div class="quote-block">
+                  <div><div class="field-label">Buy zone</div><div class="field-value">₹950–970</div></div>
+                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹968.00</div></div>
+                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.36%</div></div>
+                </div>
+                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>68%</strong></div><div class="meter"><span style="width:68%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 1.9</strong></div></div>
+                <div class="status-col"><div class="buy-zone">₹1,036 target <span class="potential">+7.0%</span></div><div class="stop-line">Stop ₹932</div><div class="tag-row"><span class="tag watch">ON WATCH</span><span class="horizon">2–5 wk</span></div></div>
+                <button class="buy-button" data-buy="TATAMOTORS" aria-label="Create paper order for Tata Motors">Paper buy</button>
+                <p class="thesis"><b>Thesis:</b> Price is near the upper end of the sample entry band; wait for confirmation instead of chasing strength. Stop ₹932. <span class="disclaimer-inline">Illustrative analysis · 6h ago</span></p>
+              </article>
+
+              <article class="signal" data-symbol="ITC" data-category="watch" data-price="438" data-stop="422" data-target="472">
+                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">ITC</div><div><div class="ticker">ITC</div><div class="company">ITC Ltd.</div><div class="exchange">NSE · FMCG</div></div></div>
+                <div class="quote-block">
+                  <div><div class="field-label">Buy zone</div><div class="field-value">₹430–440</div></div>
+                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹438.00</div></div>
+                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.21%</div></div>
+                </div>
+                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>71%</strong></div><div class="meter"><span style="width:71%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 2.1</strong></div></div>
+                <div class="status-col"><div class="buy-zone">₹472 target <span class="potential">+7.8%</span></div><div class="stop-line">Stop ₹422</div><div class="tag-row"><span class="tag watch">ON WATCH</span><span class="horizon">3–6 wk</span></div></div>
+                <button class="buy-button" data-buy="ITC" aria-label="Create paper order for ITC">Paper buy</button>
+                <p class="thesis"><b>Thesis:</b> Illustrative range has remained orderly; the setup needs a decisive close above near-term resistance. Stop ₹422. <span class="disclaimer-inline">Illustrative analysis · 1d ago</span></p>
+              </article>
+            </div>
+            <div class="empty-state" id="empty-signals"><strong>No sample signals match.</strong>Try a different symbol or filter.</div>
+          </section>
+          <aside class="disclosure"><b>Paper demo only</b><span>All recommendations, prices, confidence scores and market references on this page are illustrative sample data, not live quotes or investment advice. Orders are stored only in this page session as simulations; no broker, exchange or network connection is made. Markets involve risk; targets are not guaranteed.</span></aside>
+        </section>
+
+        <section id="other-view" class="other-view" aria-live="polite">
+          <div class="page-head">
+            <div><div class="eyebrow">Alvest · simulated workspace</div><h1 id="other-title">Overview</h1><p class="view-intro" id="other-copy"></p></div>
+            <div class="sample-stamp"><span></span> PAPER ACCOUNT</div>
+          </div>
+          <div class="simple-panel">
+            <div class="panel-heading"><div><h2 id="panel-title">Overview</h2><div class="section-caption">Local demo state · illustrative only</div></div></div>
+            <div class="table-wrap" id="other-table"></div>
+          </div>
+          <aside class="disclosure"><b>Demo workspace</b><span>This standalone page uses sample content and simulated paper orders only. Nothing here is connected to a brokerage account or exchange.</span></aside>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="order-modal" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
+      <div class="modal-head">
+        <div><div class="modal-kicker">Paper order · simulated</div><h2 id="modal-title">Place a paper buy</h2></div>
+        <button type="button" class="close-button" id="close-modal" aria-label="Close order dialog">×</button>
+      </div>
+      <form class="modal-body" id="order-form">
+        <div class="order-summary"><div><strong id="order-symbol">HDFCBANK</strong><br><span id="order-company">HDFC Bank Ltd. · NSE</span></div><div class="price" id="order-price">₹1,684.00</div></div>
+        <label class="form-label" for="quantity">Quantity</label>
+        <input class="qty-input" id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" required>
+        <div class="input-hint"><span>Whole shares only</span><span id="available-cash">Available: ₹5,00,000</span></div>
+        <div class="estimate">
+          <div class="estimate-box"><div class="field-label">Estimated paper cost</div><div class="estimate-value" id="estimated-cost">₹1,684.00</div></div>
+          <div class="estimate-box"><div class="field-label">Risk to sample stop</div><div class="estimate-value risk" id="estimated-risk">₹42.00</div></div>
+        </div>
+        <div class="demo-warning" id="modal-description">This only creates a local simulated order. No real money, broker account, API or exchange is involved.</div>
+        <div class="modal-actions"><button type="button" class="secondary-button" id="cancel-order">Cancel</button><button type="submit" class="primary-button" id="confirm-order">Confirm paper buy</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const startCash = 500000;
+      let cash = startCash;
+      let orders = [];
+      let current = null;
+      let toastTimer;
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+      const fmt = value => new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value);
+      const fmtCompact = value => `₹${(value / 100000).toFixed(2)}L`;
+      const signals = Object.fromEntries($$(".signal").map(card => [card.dataset.symbol, {
+        symbol: card.dataset.symbol,
+        company: $(".company", card).textContent,
+        price: Number(card.dataset.price),
+        stop: Number(card.dataset.stop),
+        target: Number(card.dataset.target)
+      }]));
+
+      function showToast(message) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 3600);
+      }
+
+      function updateAccount() {
+        $("#metric-cash").textContent = fmtCompact(cash);
+        $("#rail-cash").textContent = `₹${fmt(cash).replace(".00", "")}`;
+        $("#available-cash").textContent = `Available: ₹${fmt(cash).replace(".00", "")}`;
+        $("#metric-orders").textContent = String(orders.length).padStart(2, "0");
+        $("#nav-order-count").textContent = String(orders.length).padStart(2, "0");
+        $("#order-note").textContent = orders.length ? `${orders.reduce((sum, order) => sum + order.quantity, 0)} simulated share${orders.reduce((sum, order) => sum + order.quantity, 0) === 1 ? "" : "s"} placed` : "No simulated orders yet";
+      }
+
+      function setView(view) {
+        $$(".nav-link").forEach(button => {
+          if (button.dataset.view === view) button.setAttribute("aria-current", "page");
+          else button.removeAttribute("aria-current");
+        });
+        const advisory = view === "advisory";
+        $("#advisory-view").style.display = advisory ? "" : "none";
+        $("#other-view").classList.toggle("active", !advisory);
+        const names = { overview: "Overview", watchlist: "Watchlist", orders: "Orders", positions: "Positions", holdings: "Holdings", advisory: "Advisory" };
+        const name = names[view] || "Advisory";
+        $("#breadcrumb").textContent = name;
+        if (advisory) return;
+        $("#other-title").textContent = name;
+        $("#panel-title").textContent = name;
+        const descriptions = {
+          overview: "A quick view of this sample paper account. Values are simulated.",
+          watchlist: "A small list of illustrative NSE names saved for this demo.",
+          orders: "Paper buys created in this browser session. They are not sent anywhere.",
+          positions: "Positions created by confirmed simulated buys, marked at sample entry prices.",
+          holdings: "No long-term holdings are modeled in this paper workspace."
+        };
+        $("#other-copy").textContent = descriptions[view];
+        renderOther(view);
+      }
+
+      function renderOther(view) {
+        const target = $("#other-table");
+        if (view === "orders") {
+          if (!orders.length) {
+            target.innerHTML = '<div class="table-empty">No paper orders yet. Visit Advisory and choose “Paper buy” to simulate one.</div>';
+          } else {
+            target.innerHTML = `<table><thead><tr><th>Instrument</th><th>Side</th><th>Qty</th><th>Sample price</th><th>Simulated value</th><th>Time</th><th>Status</th></tr></thead><tbody>${orders.map(order => `<tr><td><strong>${order.symbol}</strong> · ${order.company}</td><td><span class="tag buy">BUY · PAPER</span></td><td class="mono">${order.quantity}</td><td class="mono">₹${fmt(order.price)}</td><td class="mono">₹${fmt(order.total)}</td><td>${order.time}</td><td>Simulated</td></tr>`).join("")}</tbody></table>`;
+          }
+          return;
+        }
+        if (view === "positions") {
+          const positions = Object.values(orders.reduce((acc, order) => {
+            const item = acc[order.symbol] || (acc[order.symbol] = { ...order, quantity: 0, total: 0 });
+            item.quantity += order.quantity; item.total += order.total; return acc;
+          }, {}));
+          target.innerHTML = positions.length ? `<table><thead><tr><th>Instrument</th><th>Qty</th><th>Avg. paper entry</th><th>Indicative value</th><th>Mode</th></tr></thead><tbody>${positions.map(item => `<tr><td><strong>${item.symbol}</strong> · ${item.company}</td><td class="mono">${item.quantity}</td><td class="mono">₹${fmt(item.total / item.quantity)}</td><td class="mono">₹${fmt(item.total)}</td><td><span class="tag buy">PAPER</span></td></tr>`).join("")}</tbody></table>` : '<div class="table-empty">No simulated positions. Confirm a paper buy to see a demo position here.</div>';
+          return;
+        }
+        if (view === "watchlist") {
+          target.innerHTML = `<table><thead><tr><th>Instrument</th><th>Sample indicative</th><th>Sample move</th><th>Signal</th></tr></thead><tbody><tr><td><strong>HDFCBANK</strong> · HDFC Bank</td><td class="mono">₹1,684.00</td><td class="mono" style="color:var(--green)">+0.82%</td><td>Buy setup</td></tr><tr><td><strong>INFY</strong> · Infosys</td><td class="mono">₹1,478.00</td><td class="mono" style="color:var(--green)">+1.14%</td><td>Buy setup</td></tr><tr><td><strong>TATAMOTORS</strong> · Tata Motors</td><td class="mono">₹968.00</td><td class="mono" style="color:var(--green)">+0.36%</td><td>On watch</td></tr></tbody></table>`;
+          return;
+        }
+        if (view === "holdings") {
+          target.innerHTML = '<div class="table-empty">No holdings are modeled. Any orders on this page are temporary paper simulations only.</div>';
+          return;
+        }
+        target.innerHTML = `<table><thead><tr><th>Paper buying power</th><th>Paper orders</th><th>Tracked sample names</th><th>Account mode</th></tr></thead><tbody><tr><td class="mono">₹${fmt(cash)}</td><td class="mono">${orders.length}</td><td>04 sample signals</td><td><span class="tag watch">DEMO ONLY</span></td></tr></tbody></table><div class="table-empty">No live market feed or brokerage account is connected.</div>`;
+      }
+
+      function updateEstimate() {
+        if (!current) return;
+        const raw = Number($("#quantity").value);
+        const quantity = Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
+        const total = quantity * current.price;
+        const risk = quantity * Math.max(0, current.price - current.stop);
+        $("#estimated-cost").textContent = `₹${fmt(total)}`;
+        $("#estimated-risk").textContent = `₹${fmt(risk)}`;
+        $("#confirm-order").disabled = quantity < 1 || total > cash;
+        $("#confirm-order").textContent = total > cash && quantity ? "Exceeds buying power" : "Confirm paper buy";
+      }
+
+      function openOrder(symbol) {
+        current = signals[symbol];
+        if (!current) return;
+        $("#order-symbol").textContent = current.symbol;
+        $("#order-company").textContent = `${current.company} · NSE`;
+        $("#order-price").textContent = `₹${fmt(current.price)}`;
+        $("#quantity").value = "1";
+        $("#order-modal").classList.add("open");
+        document.body.style.overflow = "hidden";
+        updateEstimate();
+        requestAnimationFrame(() => $("#quantity").focus());
+      }
+
+      function closeOrder() {
+        $("#order-modal").classList.remove("open");
+        document.body.style.overflow = "";
+        current = null;
+      }
+
+      $$(".nav-link").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+      $$("[data-buy]").forEach(button => button.addEventListener("click", () => openOrder(button.dataset.buy)));
+      $("#quantity").addEventListener("input", updateEstimate);
+      $("#close-modal").addEventListener("click", closeOrder);
+      $("#cancel-order").addEventListener("click", closeOrder);
+      $("#order-modal").addEventListener("click", event => { if (event.target === $("#order-modal")) closeOrder(); });
+      document.addEventListener("keydown", event => { if (event.key === "Escape" && $("#order-modal").classList.contains("open")) closeOrder(); });
+
+      $("#order-form").addEventListener("submit", event => {
+        event.preventDefault();
+        if (!current) return;
+        const quantity = Math.floor(Number($("#quantity").value));
+        const total = quantity * current.price;
+        if (!Number.isInteger(quantity) || quantity < 1) {
+          $("#quantity").setCustomValidity("Enter a quantity of at least one whole share.");
+          $("#quantity").reportValidity();
+          $("#quantity").setCustomValidity("");
+          return;
+        }
+        if (total > cash) { updateEstimate(); return; }
+        const order = { ...current, quantity, total, time: new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit" }).format(new Date()) };
+        orders.unshift(order);
+        cash -= total;
+        updateAccount();
+        closeOrder();
+        showToast(`Paper buy simulated: ${quantity} ${order.symbol} share${quantity === 1 ? "" : "s"} · ₹${fmt(total)} reserved from demo funds.`);
+        if ($("#other-view").classList.contains("active") && $("#breadcrumb").textContent === "Orders") renderOther("orders");
+      });
+
+      function applyFilters() {
+        const query = $("#signal-search").value.trim().toLowerCase();
+        const category = $("#signal-filter").value;
+        let visible = 0;
+        $$(".signal").forEach(card => {
+          const matchesQuery = card.dataset.symbol.toLowerCase().includes(query) || $(".company", card).textContent.toLowerCase().includes(query);
+          const matchesCategory = category === "all" || card.dataset.category === category;
+          card.hidden = !(matchesQuery && matchesCategory);
+          if (!card.hidden) visible++;
+        });
+        $("#empty-signals").style.display = visible ? "none" : "block";
+      }
+      $("#signal-search").addEventListener("input", applyFilters);
+      $("#signal-filter").addEventListener("change", applyFilters);
+      updateAccount();
+    })();
+  </script>
+</body>
+</html>
