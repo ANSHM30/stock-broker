@@ -99,6 +99,10 @@
     .subhead { max-width: 720px; margin: 0; color: var(--muted); font-size: 12px; }
     .sample-stamp { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; white-space: nowrap; border: 1px solid #514326; background: rgba(61, 48, 23, .42); color: #e9c873; border-radius: 5px; font-size: 10px; font-weight: 650; letter-spacing: .4px; }
     .sample-stamp span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .sample-stamp.feed-live { border-color: #31523a; color: var(--green); background: rgba(28, 48, 35, .55); }
+    .sample-stamp.feed-live span { background: var(--green); }
+    .sample-stamp.feed-error { border-color: #5b332d; color: var(--red); background: rgba(55, 35, 31, .55); }
+    .sample-stamp.feed-error span { background: var(--red); }
 
     .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(110deg, #1a1c17, #171915); }
     .metric { min-height: 91px; padding: 16px 19px; border-right: 1px solid var(--line-soft); }
@@ -174,6 +178,7 @@
     .tag.watch { color: #d8c178; background: #342d1d; }
     .horizon { color: var(--dim); font-size: 9px; }
     .buy-button { min-width: 62px; padding: 8px 11px; }
+    .buy-button:disabled, .featured-button:disabled { opacity: .48; cursor: not-allowed; transform: none; }
     .thesis { grid-column: 1 / -1; margin: -2px 0 0; padding-top: 9px; border-top: 1px solid var(--line-soft); color: #9b9e93; font-size: 10px; }
     .thesis b { color: #c9c7bc; font-weight: 550; }
     .thesis .disclaimer-inline { color: #767a70; margin-left: 7px; }
@@ -816,7 +821,7 @@
       <header class="topbar">
         <div class="crumb">Workspace <span aria-hidden="true">/</span> <strong id="breadcrumb">Advisory</strong></div>
         <div class="top-actions">
-          <div class="market-state"><span class="pulse" aria-hidden="true"></span><span class="market-copy">Illustrative market data</span><span>·</span><span>INR</span></div>
+          <div class="market-state"><span class="pulse" aria-hidden="true"></span><span class="market-copy">Advisory feed · not live quotes</span><span>·</span><span>INR</span></div>
           <div class="avatar" aria-label="Demo account">AD</div>
         </div>
       </header>
@@ -827,93 +832,44 @@
             <div>
               <div class="eyebrow">Research-led · paper only</div>
               <h1>Advisory desk</h1>
-              <p class="subhead">A considered view of sample Indian equity signals. Explore the thesis, weigh the levels, then test an idea with a paper order.</p>
+              <p class="subhead">Latest Indian equity recommendations from Planitt. Review the rationale and trade levels, then test an idea with a paper order.</p>
             </div>
-            <div class="sample-stamp"><span></span> SAMPLE DATA · NOT LIVE</div>
+            <div class="sample-stamp" id="feed-status"><span></span> CONNECTING TO ADVISORY API</div>
           </div>
 
           <section class="metrics" aria-label="Paper account summary">
-            <div class="metric"><div class="metric-label">Active recommendations <span class="metric-icon">✳</span></div><div class="metric-value">04</div><div class="metric-note">Illustrative signals only</div></div>
+            <div class="metric"><div class="metric-label">Active recommendations <span class="metric-icon">✳</span></div><div class="metric-value" id="metric-recommendations">--</div><div class="metric-note" id="recommendation-note">Loading API advisories</div></div>
             <div class="metric"><div class="metric-label">Paper orders <span class="metric-icon">↗</span></div><div class="metric-value" id="metric-orders">00</div><div class="metric-note" id="order-note">No simulated orders yet</div></div>
             <div class="metric"><div class="metric-label">Buying power <span class="metric-icon">₹</span></div><div class="metric-value" id="metric-cash">₹5.00L</div><div class="metric-note">Virtual balance · INR</div></div>
             <div class="metric"><div class="metric-label">Market reference <span class="metric-icon">◷</span></div><div class="metric-value" style="font-size:17px">SAMPLE</div><div class="metric-note">Not connected to an exchange</div></div>
           </section>
 
           <section class="featured" aria-label="Featured signal">
-            <div><div class="featured-kicker">Signal in focus · Sample</div><div class="featured-title"><b>HDFCBANK</b> · measured breakout</div></div>
-            <div class="featured-copy">Price is holding above a prior resistance band on this illustrative chart. <strong>Consider the entry range; define risk first.</strong></div>
-            <button class="featured-button" data-buy="HDFCBANK">Explore paper buy <span aria-hidden="true">→</span></button>
+            <div><div class="featured-kicker" id="featured-kicker">Latest advisory</div><div class="featured-title" id="featured-title">Waiting for recommendations…</div></div>
+            <div class="featured-copy" id="featured-copy">The latest published Indian-equity advisories will appear here.</div>
+            <button class="featured-button" id="featured-button" data-buy="" disabled>Explore paper buy <span aria-hidden="true">→</span></button>
           </section>
 
           <section aria-labelledby="signals-heading">
             <div class="section-heading">
-              <div><h2 id="signals-heading">Current recommendations</h2><div class="section-caption">4 sample ideas · prices and analysis are illustrative, not live</div></div>
+              <div><h2 id="signals-heading">Current recommendations</h2><div class="section-caption" id="signals-caption">Loading latest published Indian-equity advisories</div></div>
               <div class="filters">
                 <label class="search-wrap"><span class="search-symbol" aria-hidden="true">⌕</span><input id="signal-search" class="search" type="search" placeholder="Search symbol or company" aria-label="Search recommendations"></label>
                 <select id="signal-filter" class="filter-select" aria-label="Filter by signal">
                   <option value="all">All signals</option>
                   <option value="buy">Buy setups</option>
                   <option value="watch">On watch</option>
+                  <option value="sell">Sell setups</option>
                 </select>
               </div>
             </div>
 
-            <div class="signal-list" id="signal-list">
-              <article class="signal" data-symbol="HDFCBANK" data-category="buy" data-price="1684" data-stop="1642" data-target="1768">
-                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">H</div><div><div class="ticker">HDFCBANK</div><div class="company">HDFC Bank Ltd.</div><div class="exchange">NSE · BANKING</div></div></div>
-                <div class="quote-block">
-                  <div><div class="field-label">Buy zone</div><div class="field-value">₹1,670–1,690</div></div>
-                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹1,684.00</div></div>
-                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.82%</div></div>
-                </div>
-                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>82%</strong></div><div class="meter"><span style="width:82%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 2.0</strong></div></div>
-                <div class="status-col"><div class="buy-zone">₹1,768 target <span class="potential">+5.0%</span></div><div class="stop-line">Stop ₹1,642</div><div class="tag-row"><span class="tag buy">BUY SETUP</span><span class="horizon">2–4 wk</span></div></div>
-                <button class="buy-button" data-buy="HDFCBANK" aria-label="Create paper order for HDFC Bank">Paper buy</button>
-                <p class="thesis"><b>Thesis:</b> Holding above a prior resistance band; steady momentum supports a measured continuation setup. Stop ₹1,642. <span class="disclaimer-inline">Illustrative analysis · 2h ago</span></p>
-              </article>
-
-              <article class="signal" data-symbol="INFY" data-category="buy" data-price="1478" data-stop="1438" data-target="1555">
-                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">I</div><div><div class="ticker">INFY</div><div class="company">Infosys Ltd.</div><div class="exchange">NSE · IT SERVICES</div></div></div>
-                <div class="quote-block">
-                  <div><div class="field-label">Buy zone</div><div class="field-value">₹1,465–1,485</div></div>
-                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹1,478.00</div></div>
-                  <div><div class="field-label">Day move</div><div class="field-value positive">+1.14%</div></div>
-                </div>
-                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>76%</strong></div><div class="meter"><span style="width:76%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 1.9</strong></div></div>
-                <div class="status-col"><div class="buy-zone">₹1,555 target <span class="potential">+5.2%</span></div><div class="stop-line">Stop ₹1,438</div><div class="tag-row"><span class="tag buy">BUY SETUP</span><span class="horizon">1–3 wk</span></div></div>
-                <button class="buy-button" data-buy="INFY" aria-label="Create paper order for Infosys">Paper buy</button>
-                <p class="thesis"><b>Thesis:</b> Sample momentum pickup after a consolidation range; entry is near the illustrative support zone. Stop ₹1,438. <span class="disclaimer-inline">Illustrative analysis · 4h ago</span></p>
-              </article>
-
-              <article class="signal" data-symbol="TATAMOTORS" data-category="watch" data-price="968" data-stop="932" data-target="1036">
-                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">T</div><div><div class="ticker">TATAMOTORS</div><div class="company">Tata Motors Ltd.</div><div class="exchange">NSE · AUTOMOTIVE</div></div></div>
-                <div class="quote-block">
-                  <div><div class="field-label">Buy zone</div><div class="field-value">₹950–970</div></div>
-                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹968.00</div></div>
-                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.36%</div></div>
-                </div>
-                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>68%</strong></div><div class="meter"><span style="width:68%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 1.9</strong></div></div>
-                <div class="status-col"><div class="buy-zone">₹1,036 target <span class="potential">+7.0%</span></div><div class="stop-line">Stop ₹932</div><div class="tag-row"><span class="tag watch">ON WATCH</span><span class="horizon">2–5 wk</span></div></div>
-                <button class="buy-button" data-buy="TATAMOTORS" aria-label="Create paper order for Tata Motors">Paper buy</button>
-                <p class="thesis"><b>Thesis:</b> Price is near the upper end of the sample entry band; wait for confirmation instead of chasing strength. Stop ₹932. <span class="disclaimer-inline">Illustrative analysis · 6h ago</span></p>
-              </article>
-
-              <article class="signal" data-symbol="ITC" data-category="watch" data-price="438" data-stop="422" data-target="472">
-                <div class="signal-main"><div class="ticker-mark" aria-hidden="true">ITC</div><div><div class="ticker">ITC</div><div class="company">ITC Ltd.</div><div class="exchange">NSE · FMCG</div></div></div>
-                <div class="quote-block">
-                  <div><div class="field-label">Buy zone</div><div class="field-value">₹430–440</div></div>
-                  <div class="quote-current"><div class="field-label">Indicative</div><div class="field-value">₹438.00</div></div>
-                  <div><div class="field-label">Day move</div><div class="field-value positive">+0.21%</div></div>
-                </div>
-                <div class="quality"><div class="quality-line"><span>Confidence</span><strong>71%</strong></div><div class="meter"><span style="width:71%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>1 : 2.1</strong></div></div>
-                <div class="status-col"><div class="buy-zone">₹472 target <span class="potential">+7.8%</span></div><div class="stop-line">Stop ₹422</div><div class="tag-row"><span class="tag watch">ON WATCH</span><span class="horizon">3–6 wk</span></div></div>
-                <button class="buy-button" data-buy="ITC" aria-label="Create paper order for ITC">Paper buy</button>
-                <p class="thesis"><b>Thesis:</b> Illustrative range has remained orderly; the setup needs a decisive close above near-term resistance. Stop ₹422. <span class="disclaimer-inline">Illustrative analysis · 1d ago</span></p>
-              </article>
+            <div class="signal-list" id="signal-list" aria-live="polite">
+              <div class="table-empty" id="signals-loading">Connecting to the advisory feed…</div>
             </div>
-            <div class="empty-state" id="empty-signals"><strong>No sample signals match.</strong>Try a different symbol or filter.</div>
+            <div class="empty-state" id="empty-signals"><strong id="empty-title">No recommendations available.</strong><span id="empty-copy">The feed is empty or unavailable.</span><button class="secondary-button" id="retry-signals" type="button">Retry connection</button></div>
           </section>
-          <aside class="disclosure"><b>Paper demo only</b><span>All recommendations, prices, confidence scores and market references on this page are illustrative sample data, not live quotes or investment advice. Orders are stored only in this page session as simulations; no broker, exchange or network connection is made. Markets involve risk; targets are not guaranteed.</span></aside>
+          <aside class="disclosure"><b>Paper demo only</b><span>Recommendations and trade levels are supplied by the advisory API and are not live quotes or investment advice. Orders are simulated in this browser session; no broker, exchange or real-money order is connected. Markets involve risk; targets are not guaranteed.</span></aside>
         </section>
 
         <section id="other-view" class="other-view" aria-live="polite">
@@ -964,13 +920,156 @@
       const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
       const fmt = value => new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value);
       const fmtCompact = value => `₹${(value / 100000).toFixed(2)}L`;
-      const signals = Object.fromEntries($$(".signal").map(card => [card.dataset.symbol, {
-        symbol: card.dataset.symbol,
-        company: $(".company", card).textContent,
-        price: Number(card.dataset.price),
-        stop: Number(card.dataset.stop),
-        target: Number(card.dataset.target)
-      }]));
+      let signals = {};
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, character => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      function price(value) {
+        const number = Number(value);
+        return Number.isFinite(number) && number > 0 ? `₹${fmt(number)}` : "—";
+      }
+
+      function signalCategory(direction) {
+        const normalized = String(direction || "").toUpperCase();
+        if (normalized === "BUY") return "buy";
+        if (normalized === "SELL") return "sell";
+        return "watch";
+      }
+
+      function formatEntry(trade) {
+        const range = Array.isArray(trade.entry_range) ? trade.entry_range : [];
+        const low = trade.entry_zone_low ?? range[0];
+        const high = trade.entry_zone_high ?? range[1];
+        if (low != null && high != null) return `${price(low)}–${price(high)}`;
+        if (trade.entry_price != null) return price(trade.entry_price);
+        return "—";
+      }
+
+      function renderSignal(signal) {
+        const symbol = String(signal.symbol || "UNKNOWN").trim().toUpperCase();
+        const trade = signal.trade || {};
+        const explanation = signal.explanation || {};
+        const direction = String(signal.direction || signal.signal_type || "WATCH").toUpperCase();
+        const category = signalCategory(direction);
+        const confidenceValue = signal.confidence_score == null ? Number.NaN : Number(signal.confidence_score);
+        const confidence = Number.isFinite(confidenceValue)
+          ? Math.round(confidenceValue <= 1 ? confidenceValue * 100 : confidenceValue)
+          : null;
+        const target = Array.isArray(trade.target_prices) ? trade.target_prices[0] : null;
+        const referencePrice = Number(signal.current_price || trade.entry_price || (Array.isArray(trade.entry_range) && trade.entry_range[0]));
+        const targetValue = target == null ? Number.NaN : Number(target);
+        const potential = Number.isFinite(referencePrice) && referencePrice > 0 && Number.isFinite(targetValue)
+          ? `${targetValue >= referencePrice ? "+" : ""}${(((targetValue - referencePrice) / referencePrice) * 100).toFixed(1)}%`
+          : "";
+        const riskRewardValue = trade.risk_reward_ratio == null ? Number.NaN : Number(trade.risk_reward_ratio);
+        const riskReward = Number.isFinite(riskRewardValue) ? `1 : ${riskRewardValue.toFixed(1)}` : "—";
+        const company = signal.company_name || symbol;
+        const exchange = signal.exchange || "NSE";
+        const sector = signal.explanation?.context?.sector;
+        const entry = formatEntry(trade);
+        const rationale = explanation.rationale || explanation.strategy_rationale || explanation.summary || "No rationale was provided for this recommendation.";
+        const confidenceMarkup = confidence == null ? "—" : `${confidence}%`;
+        const progress = confidence == null ? 0 : Math.max(0, Math.min(100, confidence));
+        const targets = Array.isArray(trade.target_prices) ? trade.target_prices : [];
+        const targetLabel = targets.length > 1 ? `${price(target)} · +${targets.length - 1} more` : price(target);
+        const canPaperBuy = direction === "BUY" && Number.isFinite(referencePrice) && referencePrice > 0;
+        signals[symbol] = {
+          symbol,
+          company,
+          exchange,
+          price: Number.isFinite(referencePrice) && referencePrice > 0 ? referencePrice : 0,
+          stop: Number(trade.stop_loss) || 0,
+          target: targetValue || 0,
+          direction
+        };
+
+        return `<article class="signal" data-symbol="${escapeHtml(symbol)}" data-category="${category}">
+          <div class="signal-main"><div class="ticker-mark" aria-hidden="true">${escapeHtml(symbol.slice(0, 2))}</div><div><div class="ticker">${escapeHtml(symbol)}</div><div class="company">${escapeHtml(company)}</div><div class="exchange">${escapeHtml(exchange)}${sector ? ` · ${escapeHtml(sector)}` : ""}</div></div></div>
+          <div class="quote-block">
+            <div><div class="field-label">Entry zone</div><div class="field-value">${escapeHtml(entry)}</div></div>
+            <div class="quote-current"><div class="field-label">Reference</div><div class="field-value">${escapeHtml(price(signal.current_price))}</div></div>
+            <div><div class="field-label">Direction</div><div class="field-value ${category === "buy" ? "positive" : ""}">${escapeHtml(direction)}</div></div>
+          </div>
+          <div class="quality"><div class="quality-line"><span>Confidence</span><strong>${confidenceMarkup}</strong></div><div class="meter"><span style="width:${progress}%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>${escapeHtml(riskReward)}</strong></div></div>
+          <div class="status-col"><div class="buy-zone">${escapeHtml(targetLabel)} target ${potential ? `<span class="potential">${escapeHtml(potential)}</span>` : ""}</div><div class="stop-line">Stop ${escapeHtml(price(trade.stop_loss))}</div><div class="tag-row"><span class="tag ${category}">${escapeHtml(direction)}${category === "watch" ? " · WATCH" : " SETUP"}</span><span class="horizon">${escapeHtml(trade.horizon || trade.holding_label || "")}</span></div></div>
+          <button class="buy-button" data-buy="${escapeHtml(symbol)}" aria-label="Create paper buy for ${escapeHtml(company)}"${canPaperBuy ? "" : " disabled"}>${canPaperBuy ? "Paper buy" : "View only"}</button>
+          <p class="thesis"><b>Why this trade:</b> ${escapeHtml(rationale)} <span class="disclaimer-inline">${escapeHtml(signal.generated_at ? new Date(signal.generated_at).toLocaleString("en-IN") : "Latest advisory")}</span></p>
+        </article>`;
+      }
+
+      async function loadAdvisories() {
+        const list = $("#signal-list");
+        const empty = $("#empty-signals");
+        const status = $("#feed-status");
+        empty.style.display = "none";
+        list.innerHTML = '<div class="table-empty">Loading latest published Indian-equity advisories…</div>';
+        status.classList.remove("feed-error", "feed-live");
+        status.lastChild.textContent = " CONNECTING TO ADVISORY API";
+        try {
+          const response = await fetch("/api/advisories", {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+            signal: AbortSignal.timeout(12000)
+          });
+          if (!response.ok) throw new Error(`Advisory service returned ${response.status}`);
+          const result = await response.json();
+          if (!Array.isArray(result.data)) throw new Error("The advisory API returned an unexpected response");
+          const advisories = result.data.filter(item => item && item.symbol);
+          signals = {};
+          $("#metric-recommendations").textContent = String(advisories.length).padStart(2, "0");
+          $("#recommendation-note").textContent = "Published Indian-equity advisories";
+          $("#signals-caption").textContent = `${advisories.length} current ${advisories.length === 1 ? "advisory" : "advisories"} · paper orders only`;
+          status.classList.add("feed-live");
+          status.lastChild.textContent = " ADVISORY API CONNECTED";
+          if (!advisories.length) {
+            list.replaceChildren();
+            $("#empty-title").textContent = "No current advisories.";
+            $("#empty-copy").textContent = "The API returned no published Indian-equity recommendations.";
+            empty.style.display = "block";
+            $("#featured-kicker").textContent = "No current advisory";
+            $("#featured-title").textContent = "No signal in focus";
+            $("#featured-copy").textContent = "Published recommendations will appear here when available.";
+            $("#featured-button").disabled = true;
+            return;
+          }
+          list.innerHTML = advisories.map(renderSignal).join("");
+          const first = advisories[0];
+          const firstExplanation = first.explanation || {};
+          $("#featured-kicker").textContent = `Latest advisory · ${String(first.direction || "SIGNAL").toUpperCase()}`;
+          $("#featured-title").innerHTML = `<b>${escapeHtml(first.symbol)}</b> · ${escapeHtml(first.company_name || "Indian equity")}`;
+          $("#featured-copy").textContent = firstExplanation.rationale || firstExplanation.strategy_rationale || firstExplanation.summary || "Review the trade levels and risk before placing a paper order.";
+          const paperBuy = advisories.find(item => {
+            const trade = item.trade || {};
+            return String(item.direction || item.signal_type || "").toUpperCase() === "BUY"
+              && Number(item.current_price || trade.entry_price || (Array.isArray(trade.entry_range) && trade.entry_range[0])) > 0;
+          });
+          const featuredButton = $("#featured-button");
+          featuredButton.dataset.buy = paperBuy?.symbol || "";
+          featuredButton.disabled = !paperBuy;
+          featuredButton.innerHTML = `${paperBuy ? "Explore paper buy" : "No buy setup"} <span aria-hidden="true">→</span>`;
+          $("#empty-signals").style.display = "none";
+          applyFilters();
+        } catch (error) {
+          console.error("Could not load broker advisories", error);
+          list.replaceChildren();
+          $("#metric-recommendations").textContent = "—";
+          $("#recommendation-note").textContent = "Advisory feed unavailable";
+          $("#signals-caption").textContent = "Unable to load current recommendations";
+          status.classList.add("feed-error");
+          status.lastChild.textContent = " ADVISORY FEED UNAVAILABLE";
+          $("#empty-title").textContent = "Could not load advisories.";
+          $("#empty-copy").textContent = "Check that the demo proxy is running and the API key is configured, then retry.";
+          empty.style.display = "block";
+          $("#featured-kicker").textContent = "Advisory feed unavailable";
+          $("#featured-title").textContent = "No signal loaded";
+          $("#featured-copy").textContent = "Start the local demo server to securely connect to the advisory API.";
+          $("#featured-button").disabled = true;
+        }
+      }
 
       function showToast(message) {
         const toast = $("#toast");
@@ -1000,7 +1099,7 @@
         const names = { overview: "Overview", watchlist: "Watchlist", orders: "Orders", positions: "Positions", holdings: "Holdings", advisory: "Advisory" };
         const name = names[view] || "Advisory";
         $("#breadcrumb").textContent = name;
-        if (advisory) return;
+        if (advisory) { loadAdvisories(); return; }
         $("#other-title").textContent = name;
         $("#panel-title").textContent = name;
         const descriptions = {
@@ -1057,9 +1156,9 @@
 
       function openOrder(symbol) {
         current = signals[symbol];
-        if (!current) return;
+        if (!current || current.direction !== "BUY" || !current.price) return;
         $("#order-symbol").textContent = current.symbol;
-        $("#order-company").textContent = `${current.company} · NSE`;
+        $("#order-company").textContent = `${current.company} · ${current.exchange}`;
         $("#order-price").textContent = `₹${fmt(current.price)}`;
         $("#quantity").value = "1";
         $("#order-modal").classList.add("open");
@@ -1075,7 +1174,15 @@
       }
 
       $$(".nav-link").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
-      $$("[data-buy]").forEach(button => button.addEventListener("click", () => openOrder(button.dataset.buy)));
+      $("#signal-list").addEventListener("click", event => {
+        const button = event.target.closest("[data-buy]");
+        if (button && !button.disabled) openOrder(button.dataset.buy);
+      });
+      $("#featured-button").addEventListener("click", event => {
+        const button = event.currentTarget;
+        if (!button.disabled) openOrder(button.dataset.buy);
+      });
+      $("#retry-signals").addEventListener("click", loadAdvisories);
       $("#quantity").addEventListener("input", updateEstimate);
       $("#close-modal").addEventListener("click", closeOrder);
       $("#cancel-order").addEventListener("click", closeOrder);
@@ -1118,6 +1225,7 @@
       $("#signal-search").addEventListener("input", applyFilters);
       $("#signal-filter").addEventListener("change", applyFilters);
       updateAccount();
+      loadAdvisories();
     })();
   </script>
 </body>
