@@ -5,7 +5,7 @@ const { readFile } = require("node:fs/promises");
 const { join } = require("node:path");
 
 const port = Number(process.env.PORT || 4173);
-const host = "127.0.0.1";
+const host = process.env.HOST || "0.0.0.0";
 const appBackendUrl = (process.env.APPBACKEND_URL || "").replace(/\/+$/, "");
 const brokerApiKey = (process.env.BROKER_ADVISORY_API_KEY || "").trim();
 const htmlPath = join(__dirname, "advisory-demo.html");
@@ -16,6 +16,16 @@ if (!appBackendUrl || !brokerApiKey) {
 }
 
 const server = http.createServer(async (request, response) => {
+  if (request.method === "GET" && request.url === "/health") {
+    response.writeHead(200, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff"
+    });
+    response.end(JSON.stringify({ status: "ok" }));
+    return;
+  }
+
   if (request.method === "GET" && request.url === "/api/advisories") {
     try {
       const upstream = await fetch(
@@ -64,5 +74,16 @@ const server = http.createServer(async (request, response) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Alvest paper advisory demo: http://${host}:${port}`);
+  console.log(`Alvest advisory server listening on ${host}:${port}`);
 });
+
+for (const signal of ["SIGINT", "SIGTERM"]) {
+  process.once(signal, () => {
+    server.close(error => {
+      if (error) {
+        console.error("Could not close the server cleanly:", error.message);
+        process.exitCode = 1;
+      }
+    });
+  });
+}
