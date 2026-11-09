@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f7f4">
-  <title>Advisory Desk · Alvest Paper</title>
+  <meta name="theme-color" content="#0c100e">
+  <title>Alvest · Advisory workspace</title>
   <style>
     :root {
       color-scheme: dark;
@@ -298,23 +298,23 @@
     }
 
     :root {
-      color-scheme: light;
-      --bg: #f4f7f4;
-      --panel: #fff;
-      --panel-2: #f8faf8;
-      --panel-3: #eef3ef;
-      --line: #dfe7e0;
-      --line-soft: #e9eee9;
-      --text: #19251e;
-      --muted: #66746b;
-      --dim: #77847b;
-      --gold: #16834b;
-      --gold-soft: #e9f4ed;
-      --green: #14834a;
-      --green-soft: #eaf5ed;
-      --red: #c74d43;
-      --red-soft: #faeeec;
-      --blue: #477a9b;
+      color-scheme: dark;
+      --bg: #0c100e;
+      --panel: #141916;
+      --panel-2: #1a211c;
+      --panel-3: #222b25;
+      --line: #303a33;
+      --line-soft: #252e28;
+      --text: #e8eee9;
+      --muted: #a1aea5;
+      --dim: #77877d;
+      --gold: #55bd81;
+      --gold-soft: #183023;
+      --green: #72c890;
+      --green-soft: #1a3325;
+      --red: #df8375;
+      --red-soft: #382521;
+      --blue: #9bb9d3;
       --radius: 12px;
       --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
       --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -392,8 +392,8 @@
     .top-actions { gap: 15px; }
     .market-state { color: #69786e; }
     .pulse {
-      background: #159353;
-      box-shadow: 0 0 0 3px rgba(21, 147, 83, .11);
+      background: #ad812e;
+      box-shadow: 0 0 0 3px rgba(173, 129, 46, .12);
     }
     .avatar {
       border-color: #dce7df;
@@ -790,6 +790,393 @@
       .quality-line { font-size: 11px; }
       .quality-line strong { font-size: 11px; }
     }
+    .market-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      align-items: center;
+      gap: 0;
+      margin: 0 0 27px;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid #dfe7e0;
+      border-radius: 9px;
+      background: #fff;
+    }
+    .index-quote { min-width: 0; padding: 11px 16px; border-right: 1px solid #e9eee9; }
+    .index-name { color: #64736a; font-size: 10px; font-weight: 600; }
+    .index-values { display: flex; align-items: baseline; gap: 9px; margin-top: 3px; }
+    .index-value { color: #23352a; font: 600 14px var(--mono); letter-spacing: -.35px; }
+    .index-change { color: #16834b; font-size: 10px; font-weight: 650; }
+    .index-change.down { color: #c74d43; }
+    .index-disclaimer { padding: 8px 13px; color: #78867c; font-size: 9px; line-height: 1.4; text-align: right; }
+    .paper-ribbon {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 8px 11px;
+      border: 1px solid #d7e8dc;
+      border-left: 3px solid #16834b;
+      border-radius: 7px;
+      background: #f0f7f2;
+      color: #4c6855;
+      font-size: 9px;
+    }
+    .paper-ribbon strong { color: #1b7341; font-size: 9px; letter-spacing: .55px; }
+    .paper-ribbon .paper-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: #16834b; }
+    .view-intro { line-height: 1.6; }
+    .other-view.active { display: block; }
+    .overview-balance {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(220px, .75fr);
+      align-items: center;
+      gap: 26px;
+      margin-bottom: 18px;
+      padding: 23px 26px;
+      border: 1px solid #d8e6db;
+      border-radius: 10px;
+      background: linear-gradient(110deg, #fff 50%, #f6faf7);
+    }
+    .balance-kicker { color: #6b7b70; font-size: 10px; font-weight: 600; }
+    .balance-amount { margin-top: 6px; color: #1d3124; font: 600 clamp(28px, 3.2vw, 39px)/1.1 var(--mono); letter-spacing: -1.7px; }
+    .balance-note { margin-top: 7px; color: #748278; font-size: 10px; }
+    .balance-note strong { color: #277347; font-weight: 650; }
+    .overview-chart { min-width: 0; padding-left: 22px; border-left: 1px solid #e3ebe5; }
+    .chart-label { display: flex; justify-content: space-between; color: #79877d; font-size: 9px; }
+    .chart-label strong { color: #4c6654; font-weight: 600; }
+    .overview-chart svg { display: block; width: 100%; height: 63px; margin-top: 8px; overflow: visible; }
+    .overview-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .overview-metric { padding: 14px 16px; border: 1px solid #dfe7e0; border-radius: 8px; background: #fff; }
+    .overview-metric span { display: block; color: #738178; font-size: 10px; }
+    .overview-metric strong { display: block; margin-top: 5px; color: #26392d; font: 600 17px var(--mono); }
+    .overview-metric small { display: block; margin-top: 4px; color: #859188; font-size: 9px; }
+    .overview-lower { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(230px, .85fr); gap: 14px; }
+    .simple-panel { min-width: 0; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-heading h2 { margin: 0; color: #25372b; font-size: 14px; font-weight: 650; }
+    .panel-link {
+      border: 0; padding: 4px 0; color: #167846; background: transparent;
+      font-size: 10px; font-weight: 650; cursor: pointer;
+    }
+    .panel-link:hover { color: #0e5e33; text-decoration: underline; }
+    .quick-actions { display: grid; gap: 0; padding: 3px 16px 9px; }
+    .quick-action {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid #edf1ed;
+      color: #34483a; background: transparent; text-align: left; cursor: pointer;
+    }
+    .quick-action:last-child { border-bottom: 0; }
+    .quick-action:hover .quick-title { color: #16834b; }
+    .quick-action span:last-child { color: #718078; font-size: 15px; }
+    .quick-title { display: block; font-size: 11px; font-weight: 650; }
+    .quick-copy { display: block; margin-top: 3px; color: #7a887f; font-size: 9px; font-weight: 400; }
+    .table-wrap { overflow-x: auto; }
+    .overview-lower > .simple-panel { margin-top: 0; }
+    table { min-width: 650px; }
+    th { white-space: nowrap; }
+    td { white-space: nowrap; }
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+    .company-cell { color: #78867d; font-size: 10px; font-weight: 400; }
+    .positive-cell { color: #16834b; }
+    .negative-cell { color: #c74d43; }
+    .status-text { color: #68786d; }
+    .table-meta { margin: 0; padding: 12px 16px; color: #7a887f; font-size: 9px; border-top: 1px solid #edf1ed; }
+    .empty-page {
+      display: grid; justify-items: start; gap: 8px; padding: 28px 22px;
+      color: #6d7b71; font-size: 11px;
+    }
+    .empty-page .empty-icon {
+      display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 3px;
+      border: 1px solid #dce8df; border-radius: 8px; color: #348052; background: #f2f8f3; font-size: 16px;
+    }
+    .empty-page strong { color: #2a3d30; font-size: 13px; }
+    .empty-page p { max-width: 430px; margin: 0; line-height: 1.6; }
+    .page-toolbar { display: flex; align-items: center; gap: 8px; }
+    .toolbar-chip {
+      padding: 6px 9px; border: 1px solid #dfe8e0; border-radius: 5px;
+      color: #5e7064; background: #fff; font-size: 9px; font-weight: 600;
+    }
+    .advisory-view .metrics { margin-bottom: 18px; }
+    .advisory-view .featured { margin-bottom: 24px; }
+    @media (max-width: 760px) {
+      .market-strip { grid-template-columns: repeat(3, minmax(110px, 1fr)); overflow-x: auto; }
+      .rail { position: fixed; z-index: 20; inset: auto 0 0; width: 100%; }
+      .rail .brand, .rail .rail-label, .rail .rail-spacer, .rail .account-card, .rail .rail-foot { display: none; }
+      .index-quote { padding: 9px 11px; }
+      .index-disclaimer { grid-column: 1 / -1; padding: 7px 11px; text-align: left; border-top: 1px solid #e9eee9; }
+      .paper-ribbon { align-items: flex-start; line-height: 1.45; }
+      .overview-balance { grid-template-columns: 1fr; gap: 17px; padding: 19px; }
+      .overview-chart { padding: 13px 0 0; border-left: 0; border-top: 1px solid #e3ebe5; }
+      .overview-metrics { gap: 8px; }
+      .overview-metric { padding: 12px 11px; }
+      .overview-metric strong { font-size: 14px; }
+      .overview-lower { grid-template-columns: 1fr; }
+      .page-toolbar { align-self: flex-start; }
+    }
+    @media (max-width: 390px) {
+      .overview-metrics { grid-template-columns: 1fr; }
+      .index-quote { padding: 8px; }
+      .index-value { font-size: 12px; }
+      .index-change { font-size: 9px; }
+      .market-state .market-copy { display: inline; font-size: 8px; letter-spacing: .25px; }
+    }
+
+    :root {
+      color-scheme: dark;
+      --bg: #0c100e;
+      --panel: #141916;
+      --panel-2: #1a211c;
+      --panel-3: #222b25;
+      --line: #303a33;
+      --line-soft: #252e28;
+      --text: #e8eee9;
+      --muted: #a1aea5;
+      --dim: #77877d;
+      --gold: #55bd81;
+      --gold-soft: #183023;
+      --green: #72c890;
+      --green-soft: #1a3325;
+      --red: #df8375;
+      --red-soft: #382521;
+      --blue: #9bb9d3;
+    }
+
+    html, body { background-color: var(--bg); }
+    html { color-scheme: dark; }
+    body {
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 82% -12%, rgba(49, 135, 80, .1), transparent 36rem),
+        var(--bg);
+    }
+    button, input, select { color-scheme: dark; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline-color: var(--gold); }
+    .rail { background: #101512; border-right-color: var(--line-soft); }
+    .brand-mark {
+      color: #a8e0bb;
+      border: 1px solid #355641;
+      background: linear-gradient(145deg, #203b2a, #17231b);
+      box-shadow: none;
+    }
+    .brand-name, .crumb strong, .account-value { color: var(--text); }
+    .brand-sub, .rail-label, .nav-count, .account-caption, .rail-foot { color: var(--dim); }
+    .nav-link { color: #b6baae; }
+    .nav-link:hover { color: var(--text); background: #1c2420; }
+    .nav-link[aria-current="page"] {
+      color: #9cddb2;
+      background: #1b3023;
+      border-color: #2c4935;
+    }
+    .account-card { background: var(--panel); border-color: var(--line); }
+    .account-title { color: var(--muted); }
+    .demo-pill {
+      color: var(--green);
+      border-color: #31503a;
+      background: var(--gold-soft);
+    }
+    .topbar { background: rgba(12, 16, 14, .96); border-bottom-color: var(--line-soft); }
+    .crumb, .market-state { color: var(--muted); }
+    .pulse { background: #df877b; box-shadow: 0 0 0 3px rgba(223, 135, 123, .14); }
+    .avatar { color: #b6d7c0; border-color: #35433a; background: #1c2820; }
+    .eyebrow { color: var(--green); }
+    h1 { color: var(--text); }
+    h2, .panel-heading h2 { color: #e7e5db; }
+    .subhead, .view-intro { color: var(--muted); }
+    .sample-stamp {
+      color: #a5dfb8;
+      border-color: #31503a;
+      background: #17231b;
+    }
+    .sample-stamp span { background: var(--gold); }
+    .sample-stamp.feed-live { color: var(--green); border-color: #35523b; background: #1b291e; }
+    .sample-stamp.feed-live span { background: var(--green); }
+    .sample-stamp.feed-error { color: var(--red); border-color: #5b332d; background: #2a1e1b; }
+    .sample-stamp.feed-error span { background: var(--red); }
+
+    .metrics, .simple-panel, .overview-metric {
+      color: var(--text);
+      border-color: var(--line);
+      background: var(--panel);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .13);
+    }
+    .metric { border-right-color: var(--line-soft); }
+    .metric-label, .overview-metric span { color: var(--muted); }
+    .metric-icon { color: var(--dim); }
+    .metric-value, .overview-metric strong { color: var(--text); }
+    .metric-note, .overview-metric small { color: var(--dim); }
+    .metric-note .up { color: var(--green); }
+    .featured {
+      border-color: #34443a;
+      background: linear-gradient(112deg, #19221c, #171d19 68%, #141916);
+      box-shadow: inset 3px 0 #47845b;
+    }
+    .featured:after {
+      opacity: .48;
+      filter: saturate(.72) brightness(.82);
+    }
+    .featured-kicker { color: #83c997; }
+    .featured-title, .featured-title b { color: #e8eee9; }
+    .featured-copy { color: #aab6ad; }
+    .featured-copy strong { color: #c5decd; }
+    .featured-button, .buy-button, .primary-button {
+      color: #0d1710;
+      border-color: #418454;
+      background: #71ca8e;
+      box-shadow: none;
+    }
+    .featured-button:hover, .buy-button:hover, .primary-button:hover {
+      color: #0d1710;
+      background: #8bd6a3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+    }
+    .featured-button:disabled, .buy-button:disabled, .primary-button:disabled {
+      color: #a2aea5;
+      border-color: #38433b;
+      background: #252d27;
+      opacity: 1;
+    }
+    .section-caption { color: var(--dim); }
+    .search, .filter-select, .qty-input {
+      color: var(--text);
+      border-color: #3a4035;
+      background-color: #141711;
+    }
+    .search::placeholder, .search-symbol { color: var(--dim); }
+    .filter-select option { color: var(--text); background: var(--panel); }
+
+    .signal, .signal:hover {
+      color: var(--text);
+      border-color: var(--line);
+      background: var(--panel);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+    .signal:hover { border-color: #3d5143; background: #1a211c; }
+    .ticker-mark { color: #9bd9ad; border-color: #354239; background: #1c2820; }
+    .ticker, .field-value, .quality-line strong { color: #e9e7dd; }
+    .company, .quality-line, .thesis { color: var(--muted); }
+    .exchange, .field-label, .horizon, .thesis .disclaimer-inline { color: var(--dim); }
+    .field-value.positive, .potential { color: var(--green); }
+    .quote-current { border-left-color: var(--line); }
+    .meter { background: #34392f; }
+    .meter span { background: var(--gold); }
+    .buy-zone { color: #a7d8b3; }
+    .stop-line { color: var(--muted); }
+    .tag { color: #c1c3b8; background: #292d26; }
+    .tag.buy { color: #9ed5ad; background: #203328; }
+    .tag.watch { color: #c4c9c4; background: #2a302c; }
+    .tag.sell { color: #e39b90; background: #382521; }
+    .thesis { border-top-color: var(--line-soft); }
+    .thesis b { color: #ddd9cb; }
+    .empty-state, .empty-page { color: var(--muted); }
+    .empty-state { border-color: #464b3f; background: var(--panel); }
+    .empty-state strong, .empty-page strong { color: var(--text); }
+    .empty-page .empty-icon { color: var(--green); border-color: #3a4738; background: #20291f; }
+
+    .market-strip {
+      border-color: var(--line);
+      background: var(--panel);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+    .index-quote { border-right-color: var(--line-soft); }
+    .index-name, .index-disclaimer { color: var(--muted); }
+    .index-value { color: var(--text); }
+    .index-change { color: var(--green); }
+    .index-change.down, .negative-cell { color: var(--red); }
+    .paper-ribbon {
+      color: #b5b4a8;
+      border-color: #39382d;
+      border-left-color: var(--green);
+      background: rgba(23, 32, 26, .78);
+    }
+    .paper-ribbon strong { color: #9bd8ad; }
+    .paper-ribbon .paper-dot { background: var(--green); }
+    .overview-balance {
+      color: var(--text);
+      border-color: var(--line);
+      background: linear-gradient(112deg, #151c17 48%, #1a211b);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .13);
+    }
+    .balance-kicker, .chart-label { color: var(--muted); }
+    .balance-amount { color: var(--text); }
+    .balance-note { color: var(--dim); }
+    .balance-note strong, .chart-label strong { color: var(--green); }
+    .overview-chart { border-left-color: var(--line); }
+    .overview-chart svg path:first-child { stroke: var(--green); }
+    .overview-chart svg path:last-child { fill: var(--green); }
+    .panel-heading { border-bottom-color: var(--line-soft); }
+    .panel-link { color: var(--green); }
+    .panel-link:hover, .quick-action:hover .quick-title { color: #a6ddb4; }
+    .quick-action { color: #d2d1c6; border-bottom-color: var(--line-soft); }
+    .quick-action:hover { background: #1b221d; }
+    .quick-action span:last-child { color: var(--muted); }
+    .quick-copy, .company-cell { color: var(--dim); }
+    .table-wrap { background: var(--panel); }
+    table { color: var(--text); }
+    th { color: #aeb9b1; background: #1a211c; }
+    td { color: #d1d9d3; border-top-color: var(--line-soft); }
+    td strong { color: var(--text); }
+    tbody tr:hover { background: #1b241e; }
+    .positive-cell, .status-text { color: var(--green); }
+    .table-meta { color: var(--dim); border-top-color: var(--line-soft); }
+    .toolbar-chip { color: #a8d7b5; border-color: #34503b; background: #1a241d; }
+
+    .disclosure { color: #b1bdb4; border-left-color: #47845b; background: #171d19; }
+    .disclosure b { color: #91d0a6; }
+    .toast { color: #b9ddc2; border-color: #3b5942; background: #1c2a20; box-shadow: 0 10px 32px rgba(0, 0, 0, .32); }
+    .modal-backdrop { background: rgba(4, 5, 4, .78); }
+    .modal { color: var(--text); border-color: #42463b; background: #191c17; box-shadow: 0 24px 70px rgba(0, 0, 0, .55); }
+    .modal-head { border-bottom-color: var(--line-soft); }
+    .modal-kicker { color: var(--gold); }
+    .modal h2 { color: var(--text); }
+    .close-button { color: var(--muted); border-color: var(--line); background: #22251f; }
+    .close-button:hover { color: var(--text); border-color: #565b4e; background: #2a2e26; }
+    .order-summary, .estimate-box { border-color: var(--line); background: #141711; }
+    .order-summary strong, .estimate-value { color: var(--text); }
+    .order-summary span, .input-hint { color: var(--muted); }
+    .order-summary .price { color: var(--gold); }
+    .form-label { color: #d2d0c5; }
+    .estimate-value.risk { color: #e69b8e; }
+    .demo-warning { color: #d2c28f; border-color: #49402a; background: #242117; }
+    .secondary-button { color: #d3d1c7; border-color: #45483d; background: #242720; }
+    .secondary-button:hover { color: var(--text); background: #2c3028; }
+    .table-empty { color: var(--muted); }
+    .overview-lower > .simple-panel { background: var(--panel); }
+    .connection-card .account-value { font: 600 13px/1.35 var(--sans); letter-spacing: 0; }
+    .connection-overview .balance-amount { font-size: clamp(24px, 2.4vw, 31px); letter-spacing: -.8px; }
+    .connection-next { display: grid; grid-template-columns: 10px 1fr; align-items: center; gap: 5px 9px; padding-left: 20px; border-left: 1px solid var(--line); }
+    .connection-next strong { color: #a4ddb4; font-size: 13px; }
+    .connection-next > span:last-child { grid-column: 2; color: var(--muted); font-size: 10px; }
+    .connection-indicator { width: 8px; height: 8px; border-radius: 50%; background: #d78377; box-shadow: 0 0 0 3px rgba(215, 131, 119, .12); }
+    .advisory-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .advisory-metrics .metric-status { font: 650 14px/1.1 var(--sans); letter-spacing: .3px; color: #e1a198; }
+    .read-only-badge { position: relative; z-index: 1; align-self: center; padding: 7px 9px; border: 1px solid #35443a; border-radius: 5px; color: #a5d9b3; background: #1a241d; font-size: 9px; font-weight: 700; letter-spacing: .65px; white-space: nowrap; }
+    .signal { grid-template-columns: minmax(155px, 1.3fr) minmax(240px, 1.7fr) minmax(120px, .77fr) minmax(118px, .78fr); }
+    .toolbar-chip { white-space: nowrap; }
+
+    @media (max-width: 760px) {
+      .rail {
+        border-top-color: var(--line);
+        background: rgba(19, 22, 17, .98);
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, .28);
+      }
+      .nav-link { color: #aeb3a7; }
+      .nav-link[aria-current="page"] {
+        color: #9cddb2;
+        background: #1b3023;
+        border-color: transparent;
+      }
+      .index-quote { border-right-color: var(--line-soft); }
+      .index-disclaimer { border-top-color: var(--line-soft); }
+      .overview-chart { border-top-color: var(--line); }
+      .topbar { position: sticky; top: 0; z-index: 8; justify-content: flex-start; padding: 0 12px; }
+      .crumb, .avatar { display: none; }
+      .top-actions { flex: 1; justify-content: flex-start; }
+      .market-state { gap: 8px; padding: 6px 8px; border: 1px solid #543832; border-radius: 5px; color: #e4aaa0; background: #251b19; }
+      .market-state .market-copy { display: inline; color: inherit; font-size: clamp(8px, 2.35vw, 10px); font-weight: 700; letter-spacing: .25px; white-space: nowrap; }
+      .connection-next { padding-left: 0; border-left: 0; }
+      .advisory-metrics .metric { min-width: 0; }
+      .signal { grid-template-columns: minmax(0, 1fr) auto; }
+    }
   </style>
 </head>
 <body>
@@ -801,53 +1188,58 @@
       </div>
       <div class="rail-label">Workspace</div>
       <nav class="nav-group">
-        <button class="nav-link" data-view="overview"><span class="nav-icon" aria-hidden="true">⌂</span>Overview</button>
-        <button class="nav-link" data-view="watchlist"><span class="nav-icon" aria-hidden="true">◉</span>Watchlist</button>
-        <button class="nav-link" data-view="advisory" aria-current="page"><span class="nav-icon" aria-hidden="true">✳</span>Advisory <span class="nav-count">04</span></button>
-        <button class="nav-link" data-view="orders"><span class="nav-icon" aria-hidden="true">▤</span>Orders <span class="nav-count" id="nav-order-count">00</span></button>
-        <button class="nav-link" data-view="positions"><span class="nav-icon" aria-hidden="true">⌁</span>Positions</button>
+        <button class="nav-link" data-view="overview" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Overview</button>
         <button class="nav-link" data-view="holdings"><span class="nav-icon" aria-hidden="true">▦</span>Holdings</button>
+        <button class="nav-link" data-view="positions"><span class="nav-icon" aria-hidden="true">⌁</span>Positions</button>
+        <button class="nav-link" data-view="orders"><span class="nav-icon" aria-hidden="true">▤</span>Orders</button>
+        <button class="nav-link" data-view="watchlist"><span class="nav-icon" aria-hidden="true">◉</span>Watchlist</button>
+        <button class="nav-link" data-view="advisory"><span class="nav-icon" aria-hidden="true">✳</span>Advisory</button>
       </nav>
       <div class="rail-spacer"></div>
-      <div class="account-card">
-        <div class="account-row"><div class="account-title">Paper buying power</div><span class="demo-pill">DEMO</span></div>
-        <div class="account-value" id="rail-cash">₹5,00,000</div>
-        <div class="account-caption">Simulated funds · no real trades</div>
+      <div class="account-card connection-card">
+        <div class="account-title">Broker connection</div>
+        <div class="account-value">Not connected</div>
+        <div class="account-caption">Orders disabled</div>
       </div>
-      <div class="rail-foot">Sample workspace · v1.0</div>
+      <div class="rail-foot">Read-only research</div>
     </aside>
 
     <div class="workspace">
       <header class="topbar">
         <div class="crumb">Workspace <span aria-hidden="true">/</span> <strong id="breadcrumb">Advisory</strong></div>
         <div class="top-actions">
-          <div class="market-state"><span class="pulse" aria-hidden="true"></span><span class="market-copy">Advisory feed · not live quotes</span><span>·</span><span>INR</span></div>
-          <div class="avatar" aria-label="Demo account">AD</div>
+          <div class="market-state" role="status" aria-label="Broker not connected; orders disabled"><span class="pulse" aria-hidden="true"></span><span class="market-copy">BROKER NOT CONNECTED · ORDERS DISABLED</span></div>
+          <div class="avatar" aria-label="Read-only workspace">RO</div>
         </div>
       </header>
 
       <main>
-        <section class="view-content" id="advisory-view">
+        <section class="market-strip" aria-label="Illustrative market index references">
+          <div class="index-quote"><div class="index-name">NIFTY 50</div><div class="index-values"><span class="index-value">22,419.95</span><span class="index-change">+0.42%</span></div></div>
+          <div class="index-quote"><div class="index-name">SENSEX</div><div class="index-values"><span class="index-value">73,961.31</span><span class="index-change">+0.38%</span></div></div>
+          <div class="index-quote"><div class="index-name">NIFTY BANK</div><div class="index-values"><span class="index-value">48,172.80</span><span class="index-change down">−0.16%</span></div></div>
+          <div class="index-disclaimer">Illustrative references<br>Not live market data</div>
+        </section>
+        <div class="paper-ribbon" role="note" aria-label="Illustrative data disclosure"><span class="paper-dot" aria-hidden="true"></span><strong>ILLUSTRATIVE DATA</strong><span>Advisory levels and market references are not live quotes or investment advice.</span></div>
+        <section class="view-content advisory-view" id="advisory-view" style="display:none">
           <div class="page-head">
             <div>
-              <div class="eyebrow">Research-led · paper only</div>
+              <div class="eyebrow">Research-led ideas</div>
               <h1>Advisory desk</h1>
-              <p class="subhead">Latest Indian equity recommendations from Planitt. Review the rationale and trade levels, then test an idea with a paper order.</p>
+              <p class="subhead">Latest Indian equity recommendations from Planitt. Review rationale and indicative levels as read-only research.</p>
             </div>
             <div class="sample-stamp" id="feed-status"><span></span> CONNECTING TO ADVISORY API</div>
           </div>
 
-          <section class="metrics" aria-label="Paper account summary">
+          <section class="metrics advisory-metrics" aria-label="Advisory feed summary">
             <div class="metric"><div class="metric-label">Active recommendations <span class="metric-icon">✳</span></div><div class="metric-value" id="metric-recommendations">--</div><div class="metric-note" id="recommendation-note">Loading API advisories</div></div>
-            <div class="metric"><div class="metric-label">Paper orders <span class="metric-icon">↗</span></div><div class="metric-value" id="metric-orders">00</div><div class="metric-note" id="order-note">No simulated orders yet</div></div>
-            <div class="metric"><div class="metric-label">Buying power <span class="metric-icon">₹</span></div><div class="metric-value" id="metric-cash">₹5.00L</div><div class="metric-note">Virtual balance · INR</div></div>
-            <div class="metric"><div class="metric-label">Market reference <span class="metric-icon">◷</span></div><div class="metric-value" style="font-size:17px">SAMPLE</div><div class="metric-note">Not connected to an exchange</div></div>
+            <div class="metric"><div class="metric-label">Broker status <span class="metric-icon">●</span></div><div class="metric-value metric-status">NOT CONNECTED</div><div class="metric-note">Order actions unavailable</div></div>
           </section>
 
           <section class="featured" aria-label="Featured signal">
             <div><div class="featured-kicker" id="featured-kicker">Latest advisory</div><div class="featured-title" id="featured-title">Waiting for recommendations…</div></div>
             <div class="featured-copy" id="featured-copy">The latest published Indian-equity advisories will appear here.</div>
-            <button class="featured-button" id="featured-button" data-buy="" disabled>Explore paper buy <span aria-hidden="true">→</span></button>
+            <span class="read-only-badge">READ-ONLY RESEARCH</span>
           </section>
 
           <section aria-labelledby="signals-heading">
@@ -869,58 +1261,24 @@
             </div>
             <div class="empty-state" id="empty-signals"><strong id="empty-title">No recommendations available.</strong><span id="empty-copy">The feed is empty or unavailable.</span><button class="secondary-button" id="retry-signals" type="button">Retry connection</button></div>
           </section>
-          <aside class="disclosure"><b>Paper demo only</b><span>Recommendations and trade levels are supplied by the advisory API and are not live quotes or investment advice. Orders are simulated in this browser session; no broker, exchange or real-money order is connected. Markets involve risk; targets are not guaranteed.</span></aside>
+          <aside class="disclosure"><b>Research disclosure</b><span>Recommendations and levels are supplied by the advisory API and are indicative, not live quotes or investment advice. No broker is connected and order placement is disabled. Markets involve risk; targets are not guaranteed.</span></aside>
         </section>
 
-        <section id="other-view" class="other-view" aria-live="polite">
+        <section id="other-view" class="other-view active" aria-live="polite">
           <div class="page-head">
-            <div><div class="eyebrow">Alvest · simulated workspace</div><h1 id="other-title">Overview</h1><p class="view-intro" id="other-copy"></p></div>
-            <div class="sample-stamp"><span></span> PAPER ACCOUNT</div>
+            <div><div class="eyebrow">Alvest · workspace</div><h1 id="other-title">Overview</h1><p class="view-intro" id="other-copy"></p></div>
           </div>
-          <div class="simple-panel">
-            <div class="panel-heading"><div><h2 id="panel-title">Overview</h2><div class="section-caption">Local demo state · illustrative only</div></div></div>
-            <div class="table-wrap" id="other-table"></div>
-          </div>
-          <aside class="disclosure"><b>Demo workspace</b><span>This standalone page uses sample content and simulated paper orders only. Nothing here is connected to a brokerage account or exchange.</span></aside>
+          <div id="other-table"></div>
         </section>
       </main>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="order-modal" role="presentation">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
-      <div class="modal-head">
-        <div><div class="modal-kicker">Paper order · simulated</div><h2 id="modal-title">Place a paper buy</h2></div>
-        <button type="button" class="close-button" id="close-modal" aria-label="Close order dialog">×</button>
-      </div>
-      <form class="modal-body" id="order-form">
-        <div class="order-summary"><div><strong id="order-symbol">HDFCBANK</strong><br><span id="order-company">HDFC Bank Ltd. · NSE</span></div><div class="price" id="order-price">₹1,684.00</div></div>
-        <label class="form-label" for="quantity">Quantity</label>
-        <input class="qty-input" id="quantity" name="quantity" type="number" min="1" step="1" value="1" inputmode="numeric" required>
-        <div class="input-hint"><span>Whole shares only</span><span id="available-cash">Available: ₹5,00,000</span></div>
-        <div class="estimate">
-          <div class="estimate-box"><div class="field-label">Estimated paper cost</div><div class="estimate-value" id="estimated-cost">₹1,684.00</div></div>
-          <div class="estimate-box"><div class="field-label">Risk to sample stop</div><div class="estimate-value risk" id="estimated-risk">₹42.00</div></div>
-        </div>
-        <div class="demo-warning" id="modal-description">This only creates a local simulated order. No real money, broker account, API or exchange is involved.</div>
-        <div class="modal-actions"><button type="button" class="secondary-button" id="cancel-order">Cancel</button><button type="submit" class="primary-button" id="confirm-order">Confirm paper buy</button></div>
-      </form>
-    </section>
-  </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
   <script>
     (() => {
-      const startCash = 500000;
-      let cash = startCash;
-      let orders = [];
-      let current = null;
-      let toastTimer;
       const $ = (selector, root = document) => root.querySelector(selector);
       const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
       const fmt = value => new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value);
-      const fmtCompact = value => `₹${(value / 100000).toFixed(2)}L`;
-      let signals = {};
 
       function escapeHtml(value) {
         return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -976,27 +1334,15 @@
         const progress = confidence == null ? 0 : Math.max(0, Math.min(100, confidence));
         const targets = Array.isArray(trade.target_prices) ? trade.target_prices : [];
         const targetLabel = targets.length > 1 ? `${price(target)} · +${targets.length - 1} more` : price(target);
-        const canPaperBuy = direction === "BUY" && Number.isFinite(referencePrice) && referencePrice > 0;
-        signals[symbol] = {
-          symbol,
-          company,
-          exchange,
-          price: Number.isFinite(referencePrice) && referencePrice > 0 ? referencePrice : 0,
-          stop: Number(trade.stop_loss) || 0,
-          target: targetValue || 0,
-          direction
-        };
-
         return `<article class="signal" data-symbol="${escapeHtml(symbol)}" data-category="${category}">
           <div class="signal-main"><div class="ticker-mark" aria-hidden="true">${escapeHtml(symbol.slice(0, 2))}</div><div><div class="ticker">${escapeHtml(symbol)}</div><div class="company">${escapeHtml(company)}</div><div class="exchange">${escapeHtml(exchange)}${sector ? ` · ${escapeHtml(sector)}` : ""}</div></div></div>
           <div class="quote-block">
             <div><div class="field-label">Entry zone</div><div class="field-value">${escapeHtml(entry)}</div></div>
-            <div class="quote-current"><div class="field-label">Reference</div><div class="field-value">${escapeHtml(price(signal.current_price))}</div></div>
+            <div class="quote-current"><div class="field-label">Advisory level</div><div class="field-value">${escapeHtml(price(signal.current_price))}</div></div>
             <div><div class="field-label">Direction</div><div class="field-value ${category === "buy" ? "positive" : ""}">${escapeHtml(direction)}</div></div>
           </div>
           <div class="quality"><div class="quality-line"><span>Confidence</span><strong>${confidenceMarkup}</strong></div><div class="meter"><span style="width:${progress}%"></span></div><div class="quality-line"><span>Risk / reward</span><strong>${escapeHtml(riskReward)}</strong></div></div>
           <div class="status-col"><div class="buy-zone">${escapeHtml(targetLabel)} target ${potential ? `<span class="potential">${escapeHtml(potential)}</span>` : ""}</div><div class="stop-line">Stop ${escapeHtml(price(trade.stop_loss))}</div><div class="tag-row"><span class="tag ${category}">${escapeHtml(direction)}${category === "watch" ? " · WATCH" : " SETUP"}</span><span class="horizon">${escapeHtml(trade.horizon || trade.holding_label || "")}</span></div></div>
-          <button class="buy-button" data-buy="${escapeHtml(symbol)}" aria-label="Create paper buy for ${escapeHtml(company)}"${canPaperBuy ? "" : " disabled"}>${canPaperBuy ? "Paper buy" : "View only"}</button>
           <p class="thesis"><b>Why this trade:</b> ${escapeHtml(rationale)} <span class="disclaimer-inline">${escapeHtml(signal.generated_at ? new Date(signal.generated_at).toLocaleString("en-IN") : "Latest advisory")}</span></p>
         </article>`;
       }
@@ -1019,10 +1365,9 @@
           const result = await response.json();
           if (!Array.isArray(result.data)) throw new Error("The advisory API returned an unexpected response");
           const advisories = result.data.filter(item => item && item.symbol);
-          signals = {};
           $("#metric-recommendations").textContent = String(advisories.length).padStart(2, "0");
           $("#recommendation-note").textContent = "Published Indian-equity advisories";
-          $("#signals-caption").textContent = `${advisories.length} current ${advisories.length === 1 ? "advisory" : "advisories"} · paper orders only`;
+          $("#signals-caption").textContent = `${advisories.length} current ${advisories.length === 1 ? "advisory" : "advisories"} · read-only research`;
           status.classList.add("feed-live");
           status.lastChild.textContent = " ADVISORY API CONNECTED";
           if (!advisories.length) {
@@ -1033,7 +1378,6 @@
             $("#featured-kicker").textContent = "No current advisory";
             $("#featured-title").textContent = "No signal in focus";
             $("#featured-copy").textContent = "Published recommendations will appear here when available.";
-            $("#featured-button").disabled = true;
             return;
           }
           list.innerHTML = advisories.map(renderSignal).join("");
@@ -1041,16 +1385,7 @@
           const firstExplanation = first.explanation || {};
           $("#featured-kicker").textContent = `Latest advisory · ${String(first.direction || "SIGNAL").toUpperCase()}`;
           $("#featured-title").innerHTML = `<b>${escapeHtml(first.symbol)}</b> · ${escapeHtml(first.company_name || "Indian equity")}`;
-          $("#featured-copy").textContent = firstExplanation.rationale || firstExplanation.strategy_rationale || firstExplanation.summary || "Review the trade levels and risk before placing a paper order.";
-          const paperBuy = advisories.find(item => {
-            const trade = item.trade || {};
-            return String(item.direction || item.signal_type || "").toUpperCase() === "BUY"
-              && Number(item.current_price || trade.entry_price || (Array.isArray(trade.entry_range) && trade.entry_range[0])) > 0;
-          });
-          const featuredButton = $("#featured-button");
-          featuredButton.dataset.buy = paperBuy?.symbol || "";
-          featuredButton.disabled = !paperBuy;
-          featuredButton.innerHTML = `${paperBuy ? "Explore paper buy" : "No buy setup"} <span aria-hidden="true">→</span>`;
+          $("#featured-copy").textContent = firstExplanation.rationale || firstExplanation.strategy_rationale || firstExplanation.summary || "Review the rationale and indicative levels; order actions are unavailable.";
           $("#empty-signals").style.display = "none";
           applyFilters();
         } catch (error) {
@@ -1062,33 +1397,17 @@
           status.classList.add("feed-error");
           status.lastChild.textContent = " ADVISORY FEED UNAVAILABLE";
           $("#empty-title").textContent = "Could not load advisories.";
-          $("#empty-copy").textContent = "Check that the demo proxy is running and the API key is configured, then retry.";
+          $("#empty-copy").textContent = "Check the advisory API connection, then retry.";
           empty.style.display = "block";
           $("#featured-kicker").textContent = "Advisory feed unavailable";
           $("#featured-title").textContent = "No signal loaded";
-          $("#featured-copy").textContent = "Start the local demo server to securely connect to the advisory API.";
-          $("#featured-button").disabled = true;
+          $("#featured-copy").textContent = "Start the advisory service to securely connect to the API.";
         }
       }
 
-      function showToast(message) {
-        const toast = $("#toast");
-        toast.textContent = message;
-        toast.classList.add("show");
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove("show"), 3600);
-      }
-
-      function updateAccount() {
-        $("#metric-cash").textContent = fmtCompact(cash);
-        $("#rail-cash").textContent = `₹${fmt(cash).replace(".00", "")}`;
-        $("#available-cash").textContent = `Available: ₹${fmt(cash).replace(".00", "")}`;
-        $("#metric-orders").textContent = String(orders.length).padStart(2, "0");
-        $("#nav-order-count").textContent = String(orders.length).padStart(2, "0");
-        $("#order-note").textContent = orders.length ? `${orders.reduce((sum, order) => sum + order.quantity, 0)} simulated share${orders.reduce((sum, order) => sum + order.quantity, 0) === 1 ? "" : "s"} placed` : "No simulated orders yet";
-      }
-
       function setView(view) {
+        const names = { overview: "Overview", watchlist: "Watchlist", orders: "Orders", positions: "Positions", holdings: "Holdings", advisory: "Advisory" };
+        if (!Object.prototype.hasOwnProperty.call(names, view)) view = "overview";
         $$(".nav-link").forEach(button => {
           if (button.dataset.view === view) button.setAttribute("aria-current", "page");
           else button.removeAttribute("aria-current");
@@ -1096,18 +1415,16 @@
         const advisory = view === "advisory";
         $("#advisory-view").style.display = advisory ? "" : "none";
         $("#other-view").classList.toggle("active", !advisory);
-        const names = { overview: "Overview", watchlist: "Watchlist", orders: "Orders", positions: "Positions", holdings: "Holdings", advisory: "Advisory" };
-        const name = names[view] || "Advisory";
+        const name = names[view];
         $("#breadcrumb").textContent = name;
         if (advisory) { loadAdvisories(); return; }
         $("#other-title").textContent = name;
-        $("#panel-title").textContent = name;
         const descriptions = {
-          overview: "A quick view of this sample paper account. Values are simulated.",
-          watchlist: "A small list of illustrative NSE names saved for this demo.",
-          orders: "Paper buys created in this browser session. They are not sent anywhere.",
-          positions: "Positions created by confirmed simulated buys, marked at sample entry prices.",
-          holdings: "No long-term holdings are modeled in this paper workspace."
+          overview: "Broker connection is unavailable. Account data is not displayed; browse read-only research and illustrative references.",
+          watchlist: "Illustrative Indian-equity references only. Values are static samples, not current prices.",
+          orders: "Order placement and order history are unavailable until broker support is connected.",
+          positions: "Position data is unavailable while no broker is connected.",
+          holdings: "Holdings data is unavailable while no broker is connected."
         };
         $("#other-copy").textContent = descriptions[view];
         renderOther(view);
@@ -1115,99 +1432,58 @@
 
       function renderOther(view) {
         const target = $("#other-table");
+        const trackedNames = [
+          { symbol: "HDFCBANK", company: "HDFC Bank", value: 1684, move: "+0.82%" },
+          { symbol: "INFY", company: "Infosys", value: 1478, move: "+1.14%" },
+          { symbol: "TATAMOTORS", company: "Tata Motors", value: 968, move: "+0.36%" }
+        ];
+
+        if (view === "overview") {
+          target.innerHTML = `
+            <section class="overview-balance connection-overview" aria-label="Broker connection">
+              <div><div class="balance-kicker">BROKER CONNECTION</div><div class="balance-amount">Not connected</div><div class="balance-note">Account, holdings and positions are unavailable.</div></div>
+              <div class="connection-next"><span class="connection-indicator" aria-hidden="true"></span><strong>Orders disabled</strong><span>Broker connectivity is not yet supported.</span></div>
+            </section>
+            <div class="overview-lower">
+              <section class="simple-panel">
+                <div class="panel-heading"><div><h2>Order access</h2><div class="section-caption">Unavailable until backend support exists</div></div></div>
+                <div class="empty-page"><span class="empty-icon" aria-hidden="true">⊘</span><strong>Orders are disabled</strong><p>No order entry or order history is available in this disconnected workspace.</p><button class="panel-link" type="button" data-view="orders">View order status →</button></div>
+              </section>
+              <section class="simple-panel">
+                <div class="panel-heading"><div><h2>Read-only research</h2><div class="section-caption">Advisories and illustrative references</div></div></div>
+                <div class="quick-actions">
+                  <button class="quick-action" type="button" data-view="advisory"><span><span class="quick-title">Review advisories</span><span class="quick-copy">API-backed recommendations · no order entry</span></span><span aria-hidden="true">→</span></button>
+                  <button class="quick-action" type="button" data-view="watchlist"><span><span class="quick-title">View sample references</span><span class="quick-copy">Static illustrative values · not live quotes</span></span><span aria-hidden="true">→</span></button>
+                </div>
+              </section>
+            </div>`;
+          return;
+        }
         if (view === "orders") {
-          if (!orders.length) {
-            target.innerHTML = '<div class="table-empty">No paper orders yet. Visit Advisory and choose “Paper buy” to simulate one.</div>';
-          } else {
-            target.innerHTML = `<table><thead><tr><th>Instrument</th><th>Side</th><th>Qty</th><th>Sample price</th><th>Simulated value</th><th>Time</th><th>Status</th></tr></thead><tbody>${orders.map(order => `<tr><td><strong>${order.symbol}</strong> · ${order.company}</td><td><span class="tag buy">BUY · PAPER</span></td><td class="mono">${order.quantity}</td><td class="mono">₹${fmt(order.price)}</td><td class="mono">₹${fmt(order.total)}</td><td>${order.time}</td><td>Simulated</td></tr>`).join("")}</tbody></table>`;
-          }
+          target.innerHTML = `<section class="simple-panel"><div class="panel-heading"><div><h2>Order access</h2><div class="section-caption">Broker connection required</div></div><span class="toolbar-chip">DISABLED</span></div><div class="empty-page"><span class="empty-icon" aria-hidden="true">⊘</span><strong>Order entry and history are unavailable</strong><p>No broker is connected. This page does not create, display, or transmit orders.</p><button class="panel-link" type="button" data-view="advisory">Review read-only advisories →</button></div></section>`;
           return;
         }
         if (view === "positions") {
-          const positions = Object.values(orders.reduce((acc, order) => {
-            const item = acc[order.symbol] || (acc[order.symbol] = { ...order, quantity: 0, total: 0 });
-            item.quantity += order.quantity; item.total += order.total; return acc;
-          }, {}));
-          target.innerHTML = positions.length ? `<table><thead><tr><th>Instrument</th><th>Qty</th><th>Avg. paper entry</th><th>Indicative value</th><th>Mode</th></tr></thead><tbody>${positions.map(item => `<tr><td><strong>${item.symbol}</strong> · ${item.company}</td><td class="mono">${item.quantity}</td><td class="mono">₹${fmt(item.total / item.quantity)}</td><td class="mono">₹${fmt(item.total)}</td><td><span class="tag buy">PAPER</span></td></tr>`).join("")}</tbody></table>` : '<div class="table-empty">No simulated positions. Confirm a paper buy to see a demo position here.</div>';
+          target.innerHTML = `<section class="simple-panel"><div class="panel-heading"><div><h2>Positions</h2><div class="section-caption">Broker connection required</div></div><span class="toolbar-chip">UNAVAILABLE</span></div><div class="empty-page"><span class="empty-icon" aria-hidden="true">⌁</span><strong>Position data is unavailable</strong><p>No broker is connected, so no position or account values are shown.</p></div></section>`;
           return;
         }
         if (view === "watchlist") {
-          target.innerHTML = `<table><thead><tr><th>Instrument</th><th>Sample indicative</th><th>Sample move</th><th>Signal</th></tr></thead><tbody><tr><td><strong>HDFCBANK</strong> · HDFC Bank</td><td class="mono">₹1,684.00</td><td class="mono" style="color:var(--green)">+0.82%</td><td>Buy setup</td></tr><tr><td><strong>INFY</strong> · Infosys</td><td class="mono">₹1,478.00</td><td class="mono" style="color:var(--green)">+1.14%</td><td>Buy setup</td></tr><tr><td><strong>TATAMOTORS</strong> · Tata Motors</td><td class="mono">₹968.00</td><td class="mono" style="color:var(--green)">+0.36%</td><td>On watch</td></tr></tbody></table>`;
+          target.innerHTML = `<section class="simple-panel"><div class="panel-heading"><div><h2>Sample references</h2><div class="section-caption">Static illustrative values · not live quotes</div></div><button class="panel-link" type="button" data-view="advisory">Open advisories →</button></div><div class="table-wrap"><table><thead><tr><th>Instrument</th><th>Illustrative value</th><th>Sample change</th><th>Data status</th></tr></thead><tbody>${trackedNames.map(item => `<tr><td><strong>${item.symbol}</strong><span class="company-cell"> · ${item.company}</span></td><td class="mono">₹${fmt(item.value)}</td><td class="mono ${item.move.startsWith("+") ? "positive-cell" : "negative-cell"}">${item.move}</td><td>Illustrative</td></tr>`).join("")}</tbody></table></div><p class="table-meta">These static examples are for interface reference only and are not current market data or recommendations.</p></section>`;
           return;
         }
         if (view === "holdings") {
-          target.innerHTML = '<div class="table-empty">No holdings are modeled. Any orders on this page are temporary paper simulations only.</div>';
+          target.innerHTML = `<section class="simple-panel"><div class="panel-heading"><div><h2>Holdings</h2><div class="section-caption">Broker connection required</div></div><span class="toolbar-chip">UNAVAILABLE</span></div><div class="empty-page"><span class="empty-icon" aria-hidden="true">▦</span><strong>Holdings are not available</strong><p>Connect a supported broker when connectivity becomes available to view account holdings.</p></div></section>`;
           return;
         }
-        target.innerHTML = `<table><thead><tr><th>Paper buying power</th><th>Paper orders</th><th>Tracked sample names</th><th>Account mode</th></tr></thead><tbody><tr><td class="mono">₹${fmt(cash)}</td><td class="mono">${orders.length}</td><td>04 sample signals</td><td><span class="tag watch">DEMO ONLY</span></td></tr></tbody></table><div class="table-empty">No live market feed or brokerage account is connected.</div>`;
-      }
-
-      function updateEstimate() {
-        if (!current) return;
-        const raw = Number($("#quantity").value);
-        const quantity = Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
-        const total = quantity * current.price;
-        const risk = quantity * Math.max(0, current.price - current.stop);
-        $("#estimated-cost").textContent = `₹${fmt(total)}`;
-        $("#estimated-risk").textContent = `₹${fmt(risk)}`;
-        $("#confirm-order").disabled = quantity < 1 || total > cash;
-        $("#confirm-order").textContent = total > cash && quantity ? "Exceeds buying power" : "Confirm paper buy";
-      }
-
-      function openOrder(symbol) {
-        current = signals[symbol];
-        if (!current || current.direction !== "BUY" || !current.price) return;
-        $("#order-symbol").textContent = current.symbol;
-        $("#order-company").textContent = `${current.company} · ${current.exchange}`;
-        $("#order-price").textContent = `₹${fmt(current.price)}`;
-        $("#quantity").value = "1";
-        $("#order-modal").classList.add("open");
-        document.body.style.overflow = "hidden";
-        updateEstimate();
-        requestAnimationFrame(() => $("#quantity").focus());
-      }
-
-      function closeOrder() {
-        $("#order-modal").classList.remove("open");
-        document.body.style.overflow = "";
-        current = null;
+        target.replaceChildren();
       }
 
       $$(".nav-link").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
-      $("#signal-list").addEventListener("click", event => {
-        const button = event.target.closest("[data-buy]");
-        if (button && !button.disabled) openOrder(button.dataset.buy);
-      });
-      $("#featured-button").addEventListener("click", event => {
-        const button = event.currentTarget;
-        if (!button.disabled) openOrder(button.dataset.buy);
-      });
       $("#retry-signals").addEventListener("click", loadAdvisories);
-      $("#quantity").addEventListener("input", updateEstimate);
-      $("#close-modal").addEventListener("click", closeOrder);
-      $("#cancel-order").addEventListener("click", closeOrder);
-      $("#order-modal").addEventListener("click", event => { if (event.target === $("#order-modal")) closeOrder(); });
-      document.addEventListener("keydown", event => { if (event.key === "Escape" && $("#order-modal").classList.contains("open")) closeOrder(); });
 
-      $("#order-form").addEventListener("submit", event => {
-        event.preventDefault();
-        if (!current) return;
-        const quantity = Math.floor(Number($("#quantity").value));
-        const total = quantity * current.price;
-        if (!Number.isInteger(quantity) || quantity < 1) {
-          $("#quantity").setCustomValidity("Enter a quantity of at least one whole share.");
-          $("#quantity").reportValidity();
-          $("#quantity").setCustomValidity("");
-          return;
-        }
-        if (total > cash) { updateEstimate(); return; }
-        const order = { ...current, quantity, total, time: new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit" }).format(new Date()) };
-        orders.unshift(order);
-        cash -= total;
-        updateAccount();
-        closeOrder();
-        showToast(`Paper buy simulated: ${quantity} ${order.symbol} share${quantity === 1 ? "" : "s"} · ₹${fmt(total)} reserved from demo funds.`);
-        if ($("#other-view").classList.contains("active") && $("#breadcrumb").textContent === "Orders") renderOther("orders");
+      $("#other-table").addEventListener("click", event => {
+        const button = event.target.closest("[data-view]");
+        if (button) setView(button.dataset.view);
       });
 
       function applyFilters() {
@@ -1224,7 +1500,7 @@
       }
       $("#signal-search").addEventListener("input", applyFilters);
       $("#signal-filter").addEventListener("change", applyFilters);
-      updateAccount();
+      setView("overview");
       loadAdvisories();
     })();
   </script>
