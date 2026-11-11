@@ -38,7 +38,7 @@ type LoadState = "idle" | "loading" | "ready" | "error";
 type PaperOrder = {
   id: string;
   symbol: string;
-  side: "BUY";
+  side: "BUY" | "SELL";
   quantity: number;
   reference_price: number;
   total_value: number;
@@ -262,6 +262,10 @@ export default function Dashboard() {
   const [marketRefresh, setMarketRefresh] = useState(0);
   const [orderProduct, setOrderProduct] = useState<"INT" | "DEL">("INT");
   const [orderExecution, setOrderExecution] = useState<"Limit" | "Market">("Market");
+  const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
+  const [orderMode, setOrderMode] = useState<"Regular" | "Stop Loss" | "GTT" | "SIP">("Regular");
+  const [orderProtection, setOrderProtection] = useState(true);
+  const [orderExpanded, setOrderExpanded] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(THEME_KEY);
@@ -326,11 +330,15 @@ export default function Dashboard() {
   function openPaperOrder(signal: Signal) {
     if (category(signal) !== "buy" || referencePrice(signal) == null) return;
     setOrderSignal(signal);
-    setOrderQuantity("");
+    setOrderQuantity("1");
     setOrderError("");
     setNotice("");
     setOrderProduct("INT");
     setOrderExecution("Market");
+    setOrderSide("BUY");
+    setOrderMode("Regular");
+    setOrderProtection(true);
+    setOrderExpanded(false);
   }
 
   function closePaperOrder() {
@@ -342,6 +350,10 @@ export default function Dashboard() {
   async function submitPaperOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!orderSignal) return;
+    if (orderMode !== "Regular") {
+      setOrderError(`${orderMode} orders are not supported by this paper simulator yet. Select Regular to place a simulated order.`);
+      return;
+    }
     const quantity = Number(orderQuantity);
     const reference = referencePrice(orderSignal);
     if (!Number.isInteger(quantity) || quantity < 1) {
@@ -352,6 +364,12 @@ export default function Dashboard() {
       setOrderError("This recommendation does not have a usable reference price.");
       return;
     }
+    if (maxOrderQuantity != null && quantity > maxOrderQuantity) {
+      setOrderError(orderSide === "BUY"
+        ? `This order exceeds your available cash. Maximum at the reference price: ${maxOrderQuantity} share${maxOrderQuantity === 1 ? "" : "s"}.`
+        : `You can sell up to ${maxOrderQuantity} share${maxOrderQuantity === 1 ? "" : "s"} of ${orderSignal.symbol}.`);
+      return;
+    }
 
     setOrderState("submitting");
     setOrderError("");
@@ -359,13 +377,13 @@ export default function Dashboard() {
       const response = await fetch(`${API_BASE}/api/paper/orders`, {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ symbol: orderSignal.symbol, quantity, reference_price: reference })
+        body: JSON.stringify({ symbol: orderSignal.symbol, side: orderSide, quantity, reference_price: reference })
       });
       const result = await response.json().catch(() => ({})) as { detail?: string };
       if (!response.ok) throw new Error(result.detail || `Order service returned ${response.status}`);
       await loadPortfolio();
       setOrderSignal(null);
-      setNotice(`Order placed: ${quantity} ${orderSignal.symbol} share${quantity === 1 ? "" : "s"}.`);
+      setNotice(`${orderSide === "BUY" ? "Bought" : "Sold"} ${quantity} ${orderSignal.symbol} share${quantity === 1 ? "" : "s"} in paper mode.`);
     } catch (error) {
       setOrderError(error instanceof Error ? error.message : "The order could not be placed.");
     } finally {
@@ -401,7 +419,19 @@ export default function Dashboard() {
     return matchesText && matchesType;
   }), [signals, query, filter]);
   const orderReference = orderSignal ? referencePrice(orderSignal) : null;
-  const maxOrderQuantity = portfolio && orderReference ? Math.floor(portfolio.available_cash / orderReference) : null;
+  const orderPosition = orderSignal && portfolio
+    ? portfolio.positions.find((position) => position.symbol === orderSignal.symbol.toUpperCase())
+    : null;
+  const maxOrderQuantity = portfolio && orderReference
+    ? orderSide === "BUY" ? Math.floor(portfolio.available_cash / orderReference) : orderPosition?.quantity ?? 0
+    : null;
+
+  function adjustOrderQuantity(delta: number) {
+    const current = Number(orderQuantity);
+    const base = Number.isInteger(current) && current > 0 ? current : 1;
+    setOrderQuantity(String(Math.max(1, base + delta)));
+    setOrderError("");
+  }
 
   function navigate(nextView: View) {
     if (nextView === "advisory") setPrimarySection("stocks");
@@ -541,28 +571,31 @@ export default function Dashboard() {
 
       {notice && <div className="demo-toast" role="status">{notice}<button type="button" aria-label="Dismiss notification" onClick={() => setNotice("")}>×</button></div>}
       {orderSignal && <div className="order-ticket-backdrop" role="presentation" onMouseDown={closePaperOrder}>
-        <section className="order-ticket" role="dialog" aria-modal="true" aria-labelledby="order-ticket-title" onMouseDown={(event) => event.stopPropagation()}>
+        <section className={`order-ticket${orderExpanded ? " is-expanded" : ""}`} role="dialog" aria-modal="true" aria-labelledby="order-ticket-title" onMouseDown={(event) => event.stopPropagation()}>
           <header className="order-ticket-header">
             <div className="order-ticket-quote">
               <strong id="order-ticket-title">{orderSignal.symbol}</strong>
+              <small className="order-ticket-disclaimer">Paper order · reference quote</small>
               <span>{orderSignal.exchange || "NSE"} <b>{price(referencePrice(orderSignal))}</b><i aria-hidden="true"> ▲</i></span>
             </div>
             <div className="order-ticket-header-actions">
               <div className="order-side-toggle" aria-label="Order side">
-                <button type="button" className="active" aria-pressed="true">B</button>
-                <button type="button" aria-pressed="false">S</button>
+                <button type="button" className={orderSide === "BUY" ? "active" : ""} aria-pressed={orderSide === "BUY"} onClick={() => { setOrderSide("BUY"); setOrderError(""); }}>B</button>
+                <button type="button" className={orderSide === "SELL" ? "active sell" : ""} aria-pressed={orderSide === "SELL"} onClick={() => { setOrderSide("SELL"); setOrderError(""); }}>S</button>
               </div>
-              <button type="button" className="ticket-icon-button" aria-label="Expand order ticket" title="Expand order ticket"><span className="ui-icon ui-icon-expand" aria-hidden="true" /></button>
+              <button type="button" className="ticket-icon-button" aria-label={orderExpanded ? "Compact order ticket" : "Expand order ticket"} aria-pressed={orderExpanded} title={orderExpanded ? "Compact order ticket" : "Expand order ticket"} onClick={() => setOrderExpanded((expanded) => !expanded)}><span className="ui-icon ui-icon-expand" aria-hidden="true" /></button>
               <button type="button" className="ticket-icon-button ticket-close" onClick={closePaperOrder} aria-label="Close order">×</button>
             </div>
           </header>
 
           <nav className="order-ticket-tabs" aria-label="Order ticket mode">
-            <button type="button" className="active" aria-current="page">Regular</button>
-            <button type="button">Stop Loss</button>
-            <button type="button">GTT</button>
-            <button type="button">SIP</button>
+            <button type="button" className={orderMode === "Regular" ? "active" : ""} aria-current={orderMode === "Regular" ? "page" : undefined} onClick={() => { setOrderMode("Regular"); setOrderError(""); }}>Regular</button>
+            <button type="button" className={orderMode === "Stop Loss" ? "active" : ""} aria-current={orderMode === "Stop Loss" ? "page" : undefined} onClick={() => { setOrderMode("Stop Loss"); setOrderError(""); }}>Stop Loss</button>
+            <button type="button" className={orderMode === "GTT" ? "active" : ""} aria-current={orderMode === "GTT" ? "page" : undefined} onClick={() => { setOrderMode("GTT"); setOrderError(""); }}>GTT</button>
+            <button type="button" className={orderMode === "SIP" ? "active" : ""} aria-current={orderMode === "SIP" ? "page" : undefined} onClick={() => { setOrderMode("SIP"); setOrderError(""); }}>SIP</button>
           </nav>
+
+          {orderMode !== "Regular" && <p className="order-mode-note" role="status"><strong>{orderMode}</strong> is shown for planning only. The local simulator currently places Regular paper orders; switch back to Regular to submit.</p>}
 
           <form className="order-ticket-form" onSubmit={submitPaperOrder}>
             <div className="order-entry-grid">
@@ -575,20 +608,27 @@ export default function Dashboard() {
               </fieldset>
               <label className="order-ticket-field quantity-field">Quantity
                 <span className="quantity-control"><input type="number" min="1" step="1" inputMode="numeric" value={orderQuantity} onChange={(event) => setOrderQuantity(event.target.value)} placeholder="0" required autoFocus /><span aria-hidden="true"><b>▲</b><b>▼</b></span></span>
-                <small>{maxOrderQuantity != null ? `(Max Qty ${maxOrderQuantity} Shares)` : "Enter whole shares"}</small>
+                <small>{maxOrderQuantity != null ? `(Max ${maxOrderQuantity} ${orderSide === "BUY" ? "shares at available cash" : "shares held"})` : "Enter whole shares"}</small>
+                <span className="quantity-actions"><button type="button" onClick={() => adjustOrderQuantity(-1)} aria-label="Decrease quantity">−</button><button type="button" onClick={() => adjustOrderQuantity(1)} aria-label="Increase quantity">+</button></span>
               </label>
               <label className="order-ticket-field advisory-price-field">Price
                 <input value={price(referencePrice(orderSignal))} readOnly aria-readonly="true" />
+                <small>Reference price used by paper mode</small>
               </label>
             </div>
 
             <div className="order-execution-row" aria-label="Execution type">
-              <button type="button" className={orderExecution === "Limit" ? "active" : ""} aria-pressed={orderExecution === "Limit"} onClick={() => setOrderExecution("Limit")}>Limit</button>
-              <button type="button" className={orderExecution === "Market" ? "active" : ""} aria-pressed={orderExecution === "Market"} onClick={() => setOrderExecution("Market")}>Market</button>
+              <span>Execution</span>
+              <div className="order-execution-toggle" role="group" aria-label="Execution type">
+                <button type="button" className={orderExecution === "Limit" ? "active" : ""} aria-pressed={orderExecution === "Limit"} onClick={() => setOrderExecution("Limit")}>Limit</button>
+                <button type="button" className={orderExecution === "Market" ? "active" : ""} aria-pressed={orderExecution === "Market"} onClick={() => setOrderExecution("Market")}>Market</button>
+              </div>
+              <small>Both use the advisory reference in paper mode</small>
             </div>
 
-            <div className="order-protection-heading"><span className="order-check" aria-hidden="true">✓</span><strong>Set Stop-Loss / Target</strong><span className="order-info" aria-label="Advisory levels are read-only">i</span></div>
-            <div className="order-levels-grid">
+            <button type="button" className={`order-protection-toggle${orderProtection ? " active" : ""}`} aria-pressed={orderProtection} onClick={() => setOrderProtection((enabled) => !enabled)}><span className="order-check" aria-hidden="true">{orderProtection ? "✓" : ""}</span><strong>Set Stop-Loss / Target</strong><span className="order-info" aria-label="Advisory levels are read-only" title="These levels are advisory and cannot trigger orders in the paper simulator">i</span></button>
+            {!orderProtection && <p className="order-protection-note">Protection is off. Advisory stop-loss and target levels are hidden and will not be sent with this paper order.</p>}
+            <div className={`order-levels-grid${orderProtection ? "" : " is-hidden"}`}>
               <div className="order-level">
                 <div><span>Stop loss</span><small>Advisory</small></div>
                 <output>{price(stopLoss(orderSignal))}</output>
@@ -605,9 +645,8 @@ export default function Dashboard() {
             {orderError && <p className="order-ticket-error" role="alert">{orderError}</p>}
 
             <footer className="order-ticket-footer">
-              <div className="order-balance"><span>Available</span><strong>{portfolio ? price(portfolio.available_cash) : "Loading"}</strong></div>
-              <div className="order-estimate"><span>Estimated cost</span><strong>{price((Number(orderQuantity) || 0) * (referencePrice(orderSignal) || 0))}</strong></div>
-              <button type="submit" className="order-buy-button" disabled={orderState === "submitting"}>{orderState === "submitting" ? "PLACING ORDER…" : "PLACE BUY ORDER"}</button>
+              <div className="order-footer-summary"><div className="order-balance"><span>{orderSide === "BUY" ? "Available cash" : "Shares held"}</span><strong>{orderSide === "BUY" ? portfolio ? price(portfolio.available_cash) : "Loading" : orderPosition?.quantity ?? 0}</strong></div><div className="order-estimate"><span>{orderSide === "BUY" ? "Estimated cost" : "Estimated credit"}</span><strong>{price((Number(orderQuantity) || 0) * (referencePrice(orderSignal) || 0))}</strong></div></div>
+              <button type="submit" className={`order-action-button${orderSide === "SELL" ? " sell" : ""}`} disabled={orderState === "submitting" || orderMode !== "Regular"}>{orderState === "submitting" ? "PLACING ORDER…" : orderMode !== "Regular" ? `${orderMode.toUpperCase()} UNAVAILABLE` : `PLACE ${orderSide} ORDER`}</button>
             </footer>
           </form>
         </section>

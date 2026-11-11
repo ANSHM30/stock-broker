@@ -61,6 +61,41 @@ def test_paper_order_rejects_invalid_quantity() -> None:
     assert response.status_code == 422
 
 
+def test_paper_sell_updates_cash_and_holdings() -> None:
+    buy_response = client.post(
+        "/api/paper/orders",
+        json={"symbol": "INFY", "quantity": 3, "reference_price": 1500},
+    )
+    assert buy_response.status_code == 201
+
+    sell_response = client.post(
+        "/api/paper/orders",
+        json={"symbol": "INFY", "side": "SELL", "quantity": 1, "reference_price": 1600},
+    )
+    assert sell_response.status_code == 201
+    assert sell_response.json()["side"] == "SELL"
+
+    portfolio = client.get("/api/paper/portfolio").json()
+    assert portfolio["available_cash"] == portfolio["starting_cash"] - 4500 + 1600
+    assert portfolio["positions"] == [
+        {
+            "symbol": "INFY",
+            "quantity": 2,
+            "average_reference_price": 1500,
+            "invested_value": 3000,
+        }
+    ]
+
+
+def test_paper_sell_cannot_exceed_holdings() -> None:
+    response = client.post(
+        "/api/paper/orders",
+        json={"symbol": "INFY", "side": "SELL", "quantity": 1, "reference_price": 1500},
+    )
+    assert response.status_code == 422
+    assert "holdings" in response.json()["detail"]
+
+
 def test_advisories_returns_explicit_unconfigured_error(monkeypatch) -> None:
     monkeypatch.delenv("APPBACKEND_URL", raising=False)
     monkeypatch.delenv("BROKER_ADVISORY_API_KEY", raising=False)

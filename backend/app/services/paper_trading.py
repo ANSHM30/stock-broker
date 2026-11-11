@@ -31,26 +31,46 @@ class PaperTradingBook:
     def create_order(self, request: PaperOrderRequest) -> PaperOrder:
         total_value = round(request.quantity * request.reference_price, 2)
         with self._lock:
-            if total_value > self._available_cash:
+            current_quantity = self._position_quantity(request.symbol)
+            if request.side == "BUY" and total_value > self._available_cash:
                 raise HTTPException(status_code=422, detail="Order exceeds simulated available cash.")
+            if request.side == "SELL" and request.quantity > current_quantity:
+                raise HTTPException(status_code=422, detail="Sell quantity exceeds simulated holdings.")
             order = PaperOrder(
                 id=uuid4(),
                 symbol=request.symbol.upper(),
+                side=request.side,
                 quantity=request.quantity,
                 reference_price=request.reference_price,
                 total_value=total_value,
                 created_at=datetime.now(UTC),
             )
-            self._available_cash = round(self._available_cash - total_value, 2)
+            cash_delta = -total_value if request.side == "BUY" else total_value
+            self._available_cash = round(self._available_cash + cash_delta, 2)
             self._orders.insert(0, order)
             return order
+
+    def _position_quantity(self, symbol: str) -> int:
+        normalized_symbol = symbol.upper()
+        quantity = 0
+        for order in self._orders:
+            if order.symbol != normalized_symbol:
+                continue
+            quantity += order.quantity if order.side == "BUY" else -order.quantity
+        return quantity
 
     def portfolio(self) -> PaperPortfolio:
         with self._lock:
             holdings: dict[str, list[float | int]] = defaultdict(lambda: [0, 0.0])
-            for order in self._orders:
-                holdings[order.symbol][0] += order.quantity
-                holdings[order.symbol][1] += order.total_value
+            for order in reversed(self._orders):
+                quantity, invested_value = holdings[order.symbol]
+                if order.side == "BUY":
+                    holdings[order.symbol][0] = quantity + order.quantity
+                    holdings[order.symbol][1] = round(invested_value + order.total_value, 2)
+                else:
+                    average_cost = invested_value / quantity if quantity else 0
+                    holdings[order.symbol][0] = quantity - order.quantity
+                    holdings[order.symbol][1] = round(max(0, invested_value - average_cost * order.quantity), 2)
             positions = [
                 PaperPosition(
                     symbol=symbol,
@@ -59,11 +79,12 @@ class PaperTradingBook:
                     invested_value=round(float(values[1]), 2),
                 )
                 for symbol, values in sorted(holdings.items())
+                if int(values[0]) > 0
             ]
             return PaperPortfolio(
                 starting_cash=self._starting_cash,
                 available_cash=self._available_cash,
-                reserved_value=round(self._starting_cash - self._available_cash, 2),
+                reserved_value=round(sum(float(values[1]) for values in holdings.values()), 2),
                 positions=positions,
                 orders=list(self._orders),
             )
